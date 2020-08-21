@@ -1,8 +1,9 @@
 from gpiozero import Motor, OutputDevice
+import gpiozero
 
 class RoboMotor:
     def __init__(self, enable, positive, negative):
-        self.motor: Motor = Motor(positive, negative, pwm=False)
+        self.motor: Motor = Motor(positive, negative, pwm=True, pin_factory= gpiozero.Device.pin_factory)
         self.motorEnable:OutputDevice = OutputDevice(enable, active_high=0)
 
     def forward(self, speed=1):
@@ -12,7 +13,10 @@ class RoboMotor:
         self.motor.stop()
 
     def backward(self, speed=1):
-        self.backward(speed)
+        self.motor.backward(speed)
+
+    def reverse(self):
+        self.motor.reverse()
 
     def enable(self):
         self.motorEnable.on()
