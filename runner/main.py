@@ -2,9 +2,15 @@ import logging
 from logging.config import fileConfig
 from os import path
 import time
+import sys
 import os
 
-os.environ['GPIOZERO_PIN_FACTORY'] = os.environ.get('GPIOZERO_PIN_FACTORY', 'mock')
+import gpiozero
+from gpiozero.pins.mock import MockFactory
+
+gpiozero.Device.pin_factory = MockFactory()
+
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '../')))
 
 from library.motor.RoboMotor import RoboMotor
 from library.motor import robo_motors
@@ -18,7 +24,9 @@ if __name__ == '__main__':
 
     logger.info('Application just started.')
 
-    robo_motors.enable_robomotor(RoboMotor.ONE)
+    #robo_motors.enable_robomotor(RoboMotor.ONE)
     robo_motors.move_forward(1, RoboMotor.ONE)
-    time.sleep(3)
+    time.sleep(1)
     robo_motors.stop_robomotor(RoboMotor.ONE)
+
+    logger.info('exit!')
