@@ -31,7 +31,7 @@ if __name__ == '__main__':
     if MOCK_GPIO:
         gpiozero.Device.pin_factory = MockFactory()
 
-    
+
     RobotMotorOne.forward()
     time.sleep(5)
     RobotMotorOne.stop()
