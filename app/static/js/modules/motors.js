@@ -48,11 +48,11 @@ function set_motor_speed_api(motor_num, speed){
             url: 'http://localhost:5000/motors/' + motor_num,
             data: JSON.stringify({speed: speed}),
             contentType: 'application/json',
-            success: function(result){
+            done: function(result){
                 console.log(result)
             },
-            error: function(error){
-                $("#motor-" + motor_num + "-error").text("error on setting speed")
+            fail: function(error){
+                $("#motor-" + motor_num + "-error").text("error on setting speed: " + error)
             }
     });
 }
@@ -63,11 +63,13 @@ function set_motor_enabled_api(motor_num, enabled){
             url: 'http://localhost:5000/motors/' + motor_num,
             data: JSON.stringify({enabled: enabled}),
             contentType: 'application/json',
-            success: function(result){
+            done: function(result){
                 console.log(result)
             },
-            error: function(error){
-                $("#motor-" + motor_num + "-error").text("error on setting speed")
+            fail: function(error, exception){
+                console.log(error);
+                console.log(exception);
+                $("#motor-" + motor_num + "-error").text("error on setting speed:" + error)
             }
     });
 }
