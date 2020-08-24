@@ -1,0 +1,13 @@
+
+.slider-label-motor {
+    width: 3em !important;
+    height: 1.6em !important;
+    top: 50% !important;
+    margin-top: -.8em;
+    text-align: center;
+    line-height: 1.6em;
+}
+
+.slider-motor{
+    margin-top: 8px;
+}
