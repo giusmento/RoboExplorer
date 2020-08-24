@@ -7,6 +7,7 @@ class RoboMotor:
         self.motorEnable:OutputDevice = OutputDevice(enable, active_high=0)
         self.speed = 0
         self.name = name
+        self.active = False
 
     def forward(self, speed=1):
         self.motor.forward(speed)
@@ -26,12 +27,14 @@ class RoboMotor:
 
     def enable(self):
         self.motorEnable.off()
+        self.active = True
 
     def disable(self):
         self.motorEnable.on()
+        self.active = False
 
     def is_active(self):
-        return self.motor.is_active
+        return self.active
 
     def get_speed(self):
         return self.speed
