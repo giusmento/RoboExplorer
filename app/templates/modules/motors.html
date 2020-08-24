@@ -1,0 +1,110 @@
+<!-- MOTOR CONTROLLER -->
+        <div class="container">
+              <div class="row">
+                <div class="col-sm col-sm-1">
+                    Motor 0
+                </div>
+                <div class="col-sm-1">
+                      <input id="switch-motor-0" type="checkbox" data-toggle="toggle" data-size="sm">
+                </div>
+                <div class="col-sm">
+                    <div id="slider-motor-0" class="slider-motor">
+                        <div id="slider-label-motor-0" class="ui-slider-handle slider-label-motor"></div>
+                    </div>
+                </div>
+              </div>
+              <div class="row">
+                  <div   class="col-sm" >
+                      <div id="motor-0-error"></div>
+                  </div>
+              </div>
+              <div class="row">
+                  <div class="col-sm col-sm-1">Motor 1
+                  </div>
+                <div class="col-sm-1">
+                      <input id="switch-motor-1" type="checkbox" data-toggle="toggle" data-size="sm">
+                </div>
+                <div class="col-sm">
+                  <div id="slider-motor-1" class="slider-motor">
+                        <div id="slider-label-motor-1" class="ui-slider-handle slider-label-motor"></div>
+                    </div>
+                </div>
+              </div>
+              <div class="row">
+                  <div class="col-sm col-sm-1">Motor 2
+                  </div>
+                <div class="col-sm-1">
+                      <input id="switch-motor-2" type="checkbox" data-toggle="toggle" data-size="sm">
+                </div>
+                <div class="col-sm">
+                  <div id="slider-motor-2" class="slider-motor">
+                        <div id="slider-label-motor-2" class="ui-slider-handle slider-label-motor"></div>
+                    </div>
+                </div>
+              </div>
+              <div class="row">
+                  <div class="col-sm col-sm-1">Motor 3</div>
+
+                <div class="col-sm-1">
+                      <input id="switch-motor-3" type="checkbox" data-toggle="toggle" data-size="sm">
+                </div>
+                <div class="col-sm">
+                  <div id="slider-motor-3" class="slider-motor">
+                        <div id="slider-label-motor-3" class="ui-slider-handle slider-label-motor"></div>
+                    </div>
+                </div>
+              </div>
+        </div>
+
+        <script src="/static/js/modules/motors.js" crossorigin="anonymous"></script>
+        <script>
+
+        $(document).ready(function() {
+
+            var motors = [
+                {id:0, name: "motor-0"},
+                {id:1, name: "motor-1"},
+                {id:2, name: "motor-2"},
+                {id:3, name: "motor-3"}
+            ]
+
+            initialize_motors()
+
+            $("#switch-motor-0").change(function() {
+                toggle_motor_speed(0)
+            });
+            $("#switch-motor-1").change(function() {
+                toggle_motor_speed(1)
+            });
+            $("#switch-motor-2").change(function() {
+                toggle_motor_speed(2)
+            });
+            $("#switch-motor-3").change(function() {
+                toggle_motor_speed(3)
+            });
+
+            // SET MOTORS: AJAX CALLS
+            motors.forEach(
+                motor => {
+                    $.ajax({
+                        url: "http://localhost:5000/motors/" + motor.id + "/status",
+                        success: function(result){
+                            console.log(result)
+                            if(result.enabled){
+                                enable_motor(motor.id)
+                                enable_motor_speed(motor.id)
+                                set_motor_speed(motor.id, result.speed)
+                            }else {
+                                disable_motor(motor.id)
+                                disable_motor_speed(motor.id)
+                                set_motor_speed(motor.id, result.speed)
+                            }
+                        },
+                        error: function(error){
+                            $("#motor-" + motor.id + "-error").text("opps error")
+                        }
+              });
+            });
+
+         })
+        </script>
