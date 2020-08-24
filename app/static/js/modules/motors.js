@@ -28,8 +28,11 @@ function disable_motor_speed(motor_num){
 function toggle_motor_speed(motor_num){
     console.log("toggle motor speed " + motor_num)
     var disabled = $( "#slider-motor-" + motor_num ).slider( "option", "disabled" );
+    console.log("toggle - disabled::" + disabled)
     $( "#slider-motor-" + motor_num ).slider( "option", "disabled", ! disabled );
-    set_motor_enabled_api(motor_num, disabled)
+    var enable_motor = document.getElementById("switch-motor-" + motor_num).checked
+    console.log("enable_motor::" + enable_motor)
+    set_motor_enabled_api(motor_num, enable_motor)
 }
 
 // SET MOTOR SPEED
@@ -78,7 +81,7 @@ function initialize_motors(){
           min: 0,
           max: 10,
           value: 0,
-          disabled: true,
+          disabled: false,
           create: function() {
             handle_motor0.text( $( this ).slider( "value" ) );
           },
