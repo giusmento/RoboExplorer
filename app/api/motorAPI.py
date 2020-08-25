@@ -1,7 +1,6 @@
 from flask import Blueprint, jsonify, Response, make_response, request
 from flask import current_app
 import json
-import random
 from library.motor.motors import RobotMotors
 
 motor_api = Blueprint('motor_api', __name__)

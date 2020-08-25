@@ -22,6 +22,7 @@ gpio_conf(MOCK_GPIO, PIGPIO_ADDR)
 
 # LOAD ROBOT APIs
 from api.motorAPI import motor_api
+from api.distance_sensors_api import distance_api
 
 # Start application
 application = Flask(__name__)
@@ -32,6 +33,7 @@ if os.path.exists("config_file_default.cfg"):
 
 # Load blueprints
 application.register_blueprint(motor_api)
+application.register_blueprint(distance_api)
 
 # configure logger
 logging.config.fileConfig( 'logging_config.ini')
