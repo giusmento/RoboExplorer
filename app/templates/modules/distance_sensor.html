@@ -1,0 +1,74 @@
+<style>
+.gauge-container{
+    min-height: 300px;
+}
+.gauge-position{
+}
+
+#gauge > svg {
+    position: relative;
+    top: -50px
+}
+</style>
+<div class="container">
+  <div class="row gauge-container">
+    <div class="col-sm col-sm-8">
+        <div id="gauge" class="gauge-position"></div>
+    </div>
+    <div class="col-sm col-sm-4">
+        <input type="checkbox" id="sensor_live" name="sensor" value="sensor_live">
+        <label for="sensor_live"> Live data</label><br>
+    </div>
+  </div>
+</div>
+
+<script>
+$(document).ready(function() {
+
+    var value = 0;
+    var min = 0;
+    var max = 100;
+
+
+    var gauge = new JustGage({
+            id:"gauge",// required
+            value:value,
+            min: min,
+            max: max,
+            width: 500,
+            height: 400,
+            symbol: "cm",
+            reverse: false,
+            levelColors: ["#ff0000","#f9c802","#a9d70b"]
+            // more options here
+    });
+
+   $('#sensor_live').change(function () {
+        if ($('#sensor_live').is(":checked")){
+            console.log("activate live data")
+          t=setInterval(updateGauge, 1000);
+        }else{
+            console.log("stop live data")
+            clearInterval(t);
+        }
+
+    });
+
+   function updateGauge(){
+    console.log("retrieve distance...")
+        sensor = {id:0};
+        $.ajax({
+            url: "http://localhost:5000/distances/" + sensor.id + "/status",
+            success: function(result){
+                console.log(result)
+                gauge.refresh(result.distance * 100, result.max_distance * 100);
+            },
+            fail: function(error){
+                $("#distance-" + sensor.id + "-error").text("opps error")
+            }
+
+        });
+   }
+})
+
+</script>
