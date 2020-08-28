@@ -38,3 +38,6 @@ class RoboMotor:
 
     def get_speed(self):
         return self.speed
+
+    def close(self):
+        self.motor.close()
