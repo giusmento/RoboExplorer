@@ -1,3 +1,5 @@
 gpiozero==1.5.1
 Flask==1.1.2
 pigpio==1.46
+websockets==8.1
+websocket_client==0.57.0
