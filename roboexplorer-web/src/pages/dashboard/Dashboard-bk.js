@@ -5,8 +5,6 @@ import {
   Select,
   OutlinedInput,
   MenuItem,
-  FormControlLabel,
-  Checkbox,
 } from "@material-ui/core";
 import WarningRoundedIcon from "@material-ui/icons/WarningRounded";
 import { Alert } from "@material-ui/lab";
@@ -43,8 +41,13 @@ import { FixedLengthArray } from "../../utils/FixedLengthArray";
 import { ParseMessage } from "../../utils/ParseMessage";
 //import WebSocketContext from "../../components/Context/WebSocketContext";
 
-//const mainChartData = getMainChartData();
-const mainChartData = new FixedLengthArray(100);
+const mainChartData = getMainChartData();
+const PieChartData = [
+  { name: "Group A", value: 400, color: "primary" },
+  { name: "Group B", value: 300, color: "secondary" },
+  { name: "Group C", value: 300, color: "warning" },
+  { name: "Group D", value: 200, color: "success" },
+];
 
 const DistanceSensorData = new FixedLengthArray(50);
 DistanceSensorData.push({ value: 0 });
@@ -62,12 +65,6 @@ function Dashboard(props) {
   );
   const [lastMessage, setLastMessage] = useState("");
   const [distanceAlert, setDistanceAlert] = useState({ visible: false });
-  const [motors, setMotors] = useState([]);
-  const [servos, setServos] = useState([]);
-  const [settings, setSettings] = useState([]);
-  const [mainChart, setMainChart] = useState(mainChartData.arr);
-
-  console.log(mainChart);
 
   ws.onmessage = (message) => {
     //parse message
@@ -82,15 +79,7 @@ function Dashboard(props) {
         DistanceSensorData.push({
           value: last_distance,
         });
-        mainChartData.push({
-          power_0: motors[0] && motors[0].speed ? motors[0].speed : 0,
-          distance_0: last_distance ? last_distance : 0,
-        });
-        setMotors(msg.payload.motors);
-        setServos(msg.payload.servos);
-        setSettings(msg.payload.settings);
         setDistanceSensorChart(DistanceSensorData.arr);
-        setMainChart(mainChartData.arr);
         setLastDistance({ value: last_distance, timestamp: timestamp });
         if (last_distance > 20) {
           setDistanceAlert({ visble: false });
@@ -158,6 +147,29 @@ function Dashboard(props) {
             >
               {distanceAlert.visible && <WarningRoundedIcon color="error" />}
             </div>
+            <Grid
+              container
+              direction="row"
+              justify="space-between"
+              alignItems="center"
+            >
+              <Grid item>
+                <div style={{ position: "relative", width: "225px" }}>
+                  <ResponsiveContainer height={150} width="99%">
+                    <AreaChart data={distanceSensorChart.slice()}>
+                      <Area
+                        type="natural"
+                        dataKey="value"
+                        stroke={theme.palette.secondary.main}
+                        fill={theme.palette.secondary.light}
+                        strokeWidth={2}
+                        fillOpacity="0.25"
+                      />
+                    </AreaChart>
+                  </ResponsiveContainer>
+                </div>
+              </Grid>
+            </Grid>
           </Widget>
         </Grid>
         <Grid item lg={3} md={8} sm={6} xs={12}>
@@ -184,11 +196,9 @@ function Dashboard(props) {
                     colorBrightness="secondary"
                     className={classes.progressSectionTitle}
                   >
-                    {motors[0] && motors[0].name ? motors[0].name : "loading.."}
+                    Motor back
                   </Typography>
-                  <LinearProgressWithLabel
-                    value={motors[0] && motors[0].speed ? motors[0].speed : 0}
-                  />
+                  <LinearProgressWithLabel value={10} />
                 </div>
                 <div
                   style={{ position: "relative", top: "30px", width: "224px" }}
@@ -200,11 +210,9 @@ function Dashboard(props) {
                     colorBrightness="secondary"
                     className={classes.progressSectionTitle}
                   >
-                    {motors[1] && motors[1].name ? motors[1].name : "loading.."}
+                    Motor front
                   </Typography>
-                  <LinearProgressWithLabel
-                    value={motors[1] && motors[1].speed ? motors[1].speed : 0}
-                  />
+                  <LinearProgressWithLabel value={30} />
                 </div>
               </Grid>
             </Grid>
@@ -231,7 +239,7 @@ function Dashboard(props) {
                     color="text"
                     colorBrightness="secondary"
                   >
-                    {servos[0] && servos[0].name ? servos[0].name : "loading.."}
+                    Servo 0:
                   </Typography>
                   <Typography
                     size="xl"
@@ -239,9 +247,7 @@ function Dashboard(props) {
                     color="text"
                     colorBrightness="secondary"
                   >
-                    &nbsp;&nbsp;
-                    {servos[0] && servos[0].name ? servos[0].value : "..."}
-                    &ordm;
+                    &nbsp;&nbsp;15 &ordm;
                   </Typography>
                 </div>
                 <div className={classes.visitsNumberContainer}>
@@ -251,7 +257,7 @@ function Dashboard(props) {
                     color="text"
                     colorBrightness="secondary"
                   >
-                    {servos[1] && servos[1].name ? servos[1].name : "loading.."}
+                    Servo 1:
                   </Typography>
                   <Typography
                     size="xl"
@@ -259,9 +265,7 @@ function Dashboard(props) {
                     color="text"
                     colorBrightness="secondary"
                   >
-                    &nbsp;&nbsp;
-                    {servos[1] && servos[1].name ? servos[1].value : "..."}
-                    &ordm;
+                    &nbsp;&nbsp;20 &ordm;
                   </Typography>
                 </div>
               </Grid>
@@ -269,53 +273,41 @@ function Dashboard(props) {
           </Widget>
         </Grid>
         <Grid item lg={3} md={4} sm={6} xs={12}>
-          <Widget title="Controls" upperTitle className={classes.card}>
+          <Widget title="Configuration" upperTitle className={classes.card}>
             <Grid container spacing={2}>
-              <Grid item xs={12}>
+              <Grid item xs={6}>
                 <ResponsiveContainer width="100%" height={144}>
-                  <div>
-                    <div className={classes.visitsNumberContainer}>
-                      <Checkbox
-                        checked={
-                          settings && settings.anti_collision
-                            ? settings.anti_collision
-                            : false
-                        }
-                        // onChange={handleChange}
-                        name="checkedB"
-                        color="primary"
-                      />
-
-                      <Typography
-                        size="l"
-                        weight="medium"
-                        color="text"
-                        colorBrightness="secondary"
-                      >
-                        Anti-collision {settings.anti_collision}
-                      </Typography>
-                    </div>
-                    <div className={classes.visitsNumberContainer}>
-                      <Checkbox
-                        checked={
-                          settings && settings.camera ? settings.camera : false
-                        }
-                        // onChange={handleChange}
-                        name="checkedB"
-                        color="primary"
-                      />
-
-                      <Typography
-                        size="l"
-                        weight="medium"
-                        color="text"
-                        colorBrightness="secondary"
-                      >
-                        Camera
-                      </Typography>
-                    </div>
-                  </div>
+                  <PieChart margin={{ left: theme.spacing(2) }}>
+                    <Pie
+                      data={PieChartData}
+                      innerRadius={45}
+                      outerRadius={60}
+                      dataKey="value"
+                    >
+                      {PieChartData.map((entry, index) => (
+                        <Cell
+                          key={`cell-${index}`}
+                          fill={theme.palette[entry.color].main}
+                        />
+                      ))}
+                    </Pie>
+                  </PieChart>
                 </ResponsiveContainer>
+              </Grid>
+              <Grid item xs={6}>
+                <div className={classes.pieChartLegendWrapper}>
+                  {PieChartData.map(({ name, value, color }, index) => (
+                    <div key={color} className={classes.legendItemContainer}>
+                      <Dot color={color} />
+                      <Typography style={{ whiteSpace: "nowrap" }}>
+                        &nbsp;{name}&nbsp;
+                      </Typography>
+                      <Typography color="text" colorBrightness="secondary">
+                        &nbsp;{value}
+                      </Typography>
+                    </div>
+                  ))}
+                </div>
               </Grid>
             </Grid>
           </Widget>
@@ -330,56 +322,62 @@ function Dashboard(props) {
                   color="text"
                   colorBrightness="secondary"
                 >
-                  Motor Power Chart
+                  Daily Line Chart
                 </Typography>
                 <div className={classes.mainChartHeaderLabels}>
                   <div className={classes.mainChartHeaderLabel}>
-                    <Dot color="primary" />
-                    <Typography
-                      size="l"
-                      weight="medium"
-                      color="text"
-                      colorBrightness="secondary"
-                    >
-                      &nbsp;Power 0
+                    <Dot color="warning" />
+                    <Typography className={classes.mainChartLegentElement}>
+                      Tablet
                     </Typography>
                   </div>
                   <div className={classes.mainChartHeaderLabel}>
-                    <Dot color={theme.palette.background.light} />
-                    <Typography
-                      size="l"
-                      weight="medium"
-                      color="text"
-                      colorBrightness="secondary"
-                    >
-                      Distance Sensor 0
+                    <Dot color="primary" />
+                    <Typography className={classes.mainChartLegentElement}>
+                      Mobile
+                    </Typography>
+                  </div>
+                  <div className={classes.mainChartHeaderLabel}>
+                    <Dot color="primary" />
+                    <Typography className={classes.mainChartLegentElement}>
+                      Desktop
                     </Typography>
                   </div>
                 </div>
+                <Select
+                  value={mainChartState}
+                  onChange={(e) => setMainChartState(e.target.value)}
+                  input={
+                    <OutlinedInput
+                      labelWidth={0}
+                      classes={{
+                        notchedOutline: classes.mainChartSelectRoot,
+                        input: classes.mainChartSelect,
+                      }}
+                    />
+                  }
+                  autoWidth
+                >
+                  <MenuItem value="daily">Daily</MenuItem>
+                  <MenuItem value="weekly">Weekly</MenuItem>
+                  <MenuItem value="monthly">Monthly</MenuItem>
+                </Select>
               </div>
             }
           >
-            <ResponsiveContainer width="100%" minWidth={500} height={200}>
+            <ResponsiveContainer width="100%" minWidth={500} height={350}>
               <ComposedChart
                 margin={{ top: 0, right: -15, left: -15, bottom: 0 }}
-                data={mainChart.slice()}
+                data={mainChartData}
               >
                 <YAxis
-                  yAxisId="left"
+                  ticks={[0, 2500, 5000, 7500]}
                   tick={{
                     fill: theme.palette.text.hint + "80",
                     fontSize: 14,
                   }}
                   stroke={theme.palette.text.hint + "80"}
-                />
-                <YAxis
-                  yAxisId="right"
-                  tick={{
-                    fill: theme.palette.text.hint + "80",
-                    fontSize: 14,
-                  }}
-                  stroke={"red"}
-                  orientation="right"
+                  tickLine={false}
                 />
                 <XAxis
                   tickFormatter={(i) => i + 1}
@@ -391,24 +389,48 @@ function Dashboard(props) {
                   tickLine={false}
                 />
                 <Area
-                  yAxisId="right"
                   type="natural"
-                  dataKey="distance_0"
+                  dataKey="desktop"
                   fill={theme.palette.background.light}
                   strokeWidth={0}
                   activeDot={false}
                 />
                 <Line
-                  yAxisId="left"
                   type="natural"
-                  dataKey="power_0"
+                  dataKey="mobile"
                   stroke={theme.palette.primary.main}
                   strokeWidth={2}
                   dot={false}
                   activeDot={false}
                 />
+                <Line
+                  type="linear"
+                  dataKey="tablet"
+                  stroke={theme.palette.warning.main}
+                  strokeWidth={2}
+                  dot={{
+                    stroke: theme.palette.warning.dark,
+                    strokeWidth: 2,
+                    fill: theme.palette.warning.main,
+                  }}
+                />
               </ComposedChart>
             </ResponsiveContainer>
+          </Widget>
+        </Grid>
+        {mock.bigStat.map((stat) => (
+          <Grid item md={4} sm={6} xs={12} key={stat.product}>
+            <BigStat {...stat} />
+          </Grid>
+        ))}
+        <Grid item xs={12}>
+          <Widget
+            title="Support Requests"
+            upperTitle
+            noBodyPadding
+            bodyClass={classes.tableWidget}
+          >
+            <Table data={mock.table} />
           </Widget>
         </Grid>
       </Grid>
@@ -442,11 +464,15 @@ function getRandomData(length, min, max, multiplier = 10, maxDiff = 10) {
 
 function getMainChartData() {
   var resultArray = [];
-  var power = getRandomData(100, 0, 100, 500);
+  var tablet = getRandomData(31, 3500, 6500, 7500, 1000);
+  var desktop = getRandomData(31, 1500, 7500, 7500, 1500);
+  var mobile = getRandomData(31, 1500, 7500, 7500, 1500);
 
-  for (let i = 0; i < power.length; i++) {
+  for (let i = 0; i < tablet.length; i++) {
     resultArray.push({
-      power: power[i].value,
+      tablet: tablet[i].value,
+      desktop: desktop[i].value,
+      mobile: mobile[i].value,
     });
   }
 

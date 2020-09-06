@@ -1,7 +1,7 @@
 from library.motor.motors import RobotMotors
 from library.ultrasonic.ultrasonicsensors import ultra_sonic_sensors
 
-class RobotExplorer:
+class RoboExplorer:
     def __init__(self):
         self.name= "Robot Explorer"
         self.max_speed = 100
@@ -37,7 +37,21 @@ class RobotExplorer:
         return self.is_moving
 
     def status(self):
-        return {"last_distance": self.__ultrasonicsensor.last_distance }
+        return {
+            "last_distance": self.__ultrasonicsensor.last_distance,
+            "motors":[
+                {"name": "motor_0", "speed": self.last_speed},
+                {"name": "motor_1", "speed": 0}
+                ],
+            "servos":[
+                {"name": "servo_0", "value": 0},
+                {"name": "servo_1", "value": 0}
+                ],
+            "settings": {
+                "anti_collision": self.collition_detection,
+                "camera": False
+            }
+        }
 
     def is_ready(self):
         return self.distance_sensor_enabled
@@ -46,5 +60,3 @@ class RobotExplorer:
         self.__motors[0].close()
         self.__motors[1].close()
         self.__ultrasonicsensor.close()
-
-robotExplorer = RobotExplorer()

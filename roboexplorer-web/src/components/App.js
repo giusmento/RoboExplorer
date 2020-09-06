@@ -15,6 +15,13 @@ export default function App() {
   // global
   var { isAuthenticated } = useUserState();
 
+  // const wsContext = {
+  //   name: "Kwame",
+  //   favorites: ["avocado", "carrot"],
+  // };
+
+  console.log("APP component");
+
   return (
     <HashRouter>
       <Switch>
@@ -37,7 +44,7 @@ export default function App() {
     return (
       <Route
         {...rest}
-        render={props =>
+        render={(props) =>
           isAuthenticated ? (
             React.createElement(component, props)
           ) : (
@@ -59,7 +66,7 @@ export default function App() {
     return (
       <Route
         {...rest}
-        render={props =>
+        render={(props) =>
           isAuthenticated ? (
             <Redirect
               to={{

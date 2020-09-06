@@ -1,2 +1,2 @@
 HOST_ADDRESS = "localhost"
-HOST_PORT = 6789
+HOST_PORT = 6790
