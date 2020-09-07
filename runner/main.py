@@ -1,43 +1,47 @@
+import asyncio
 import logging
-from logging.config import fileConfig
-import argparse
-from os import path
-import sys
-import os
+from utils.gpio_conf import gpio_conf
+from utils.parse_args import *
+from config import *
 
-import gpiozero
-from gpiozero.pins.mock import MockFactory, MockPWMPin
-
-# Parse args
-parser = argparse.ArgumentParser(description='Exercise')
-parser.add_argument('--mock_gpio', type=bool, nargs='?', const=True, default=False, help='Mock gpio', required=False)
-parser.add_argument('--demo', type=bool, nargs='?', const=True, default=False, help='start demo', required=False)
-
-args = parser.parse_args()
-MOCK_GPIO = args.mock_gpio if args.mock_gpio != None else False
-DEMO = args.demo if args.demo != None else False
-
-if MOCK_GPIO:
-    gpiozero.Device.pin_factory = MockFactory(pin_class=MockPWMPin)
-
-sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '../')))
-
-from application.demo import demo_robo_explorer
-
-#logger
-log_file_path = path.join(path.dirname(path.abspath(__file__)), 'logging_config.ini')
-logging.config.fileConfig(log_file_path)
+logging.basicConfig(format= LOG_FORMAT)
 logger = logging.getLogger(__name__)
+logger.setLevel(logging.INFO)
 
+# configure GPIO
+gpio_conf(MOCK_GPIO, PIGPIO_ADDR)
 
-if __name__ == '__main__':
+#Load needed gpio files
+from library.communication.WebSocketServer import WebSocketServer
+from threads.th_ultrasonicsensor import th_ultrasonicsensor
+from threads.th_broadcast_robo_status import th_broadcast_robo_status
+from threads.th_broadcast_queue import th_broadcast_queue
+from library.queue.RoboQueue import RoboQueue
+from controls.RoboControl_EasyMove import RoboControl_EasyMove
 
-    logger.info('Application just started.')
+#Inizialize thread communication
+roboQueue = RoboQueue()
+roboQueue.create(WEBSOCKET_QUEUE)
+# inizialize websocket
+webSocketServer = WebSocketServer()
 
-    if DEMO:
-        logger.info('Start demo')
-        demo_robo_explorer()
-    else:
-        logger.info('nothing to do yet!')
+# Start robot control
+roboControl = RoboControl_EasyMove()
 
-    logger.info('exit!')
+try:
+    # START THREADS
+    asyncio.get_event_loop().create_task(th_broadcast_robo_status(roboControl))
+    asyncio.get_event_loop().create_task(th_ultrasonicsensor(roboControl, roboQueue))
+    # START WEB SOCKET SERVER
+    asyncio.get_event_loop().run_until_complete(webSocketServer.start(HOST_ADDRESS, HOST_PORT))
+    # START WEBSOCKET SEND SERVICE
+    asyncio.get_event_loop().create_task(th_broadcast_queue(webSocketServer, roboQueue))
+    # RUN FOREVER
+    asyncio.get_event_loop().run_forever()
+except KeyboardInterrupt:
+    # EXIT ON CONTROL+C
+    print("Received exit, exiting")
+finally:
+    print("Received exit, exiting")
+
+logger.info("goodbye")

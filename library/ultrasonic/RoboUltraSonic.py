@@ -1,5 +1,5 @@
 from gpiozero import DistanceSensor
-from ws.parse_args import MOCK_GPIO, PIGPIO_ADDR
+from utils.parse_args import MOCK_GPIO, PIGPIO_ADDR
 import random
 
 class RoboUltraSonic:

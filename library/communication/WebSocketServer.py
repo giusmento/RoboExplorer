@@ -7,7 +7,7 @@ import json
 import logging
 import websockets
 import random
-from ws.config import LOG_FORMAT
+from config import LOG_FORMAT
 
 logging.basicConfig(format=LOG_FORMAT)
 logger = logging.getLogger(__name__)

@@ -1,14 +1,14 @@
 import asyncio
 import logging
 from controls.RoboControl import RoboControl
-from ws.config import LOG_FORMAT
+from config import LOG_FORMAT
 
 logging.basicConfig(format=LOG_FORMAT)
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.INFO)
 
 # Broadcast robot status
-async def ws_broadcast_robo_status(roboControl:RoboControl):
+async def th_broadcast_robo_status(roboControl:RoboControl):
     while True:
         print("ws_broadcast_report")
         # payload = roboExplorer.status()

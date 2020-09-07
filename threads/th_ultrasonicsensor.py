@@ -2,8 +2,8 @@ import asyncio
 import logging
 import collections
 import numpy as np
-from ws.messages.Message import Message
-from ws.config import WEBSOCKET_QUEUE
+from library.messages.Message import Message
+from config import WEBSOCKET_QUEUE
 from library.observers.Observer import Observer
 from library.ultrasonic.ultrasonicsensors import ultra_sonic_sensors
 from library.messages.DistanceMessage import DistanceMessage
@@ -22,7 +22,7 @@ h_dist = collections.deque(maxlen=ARRAY_MAX_LENGHT)
 WS_QUEUE = "ws-sendMessage"
 
 # This Thread controls the ultrasonic sensor
-async def ws_ultrasonicsensor(robotControl:RoboControl, queues:RoboQueue):
+async def th_ultrasonicsensor(robotControl:RoboControl, queues:RoboQueue):
     logger.warning("warm up ultrasonic sensor")
     while len(h_dist)<=ARRAY_MAX_LENGHT-1:
         h_dist.append(int(ultra_sonic_sensors[0].get_distance() *100))
