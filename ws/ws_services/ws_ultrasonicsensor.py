@@ -10,6 +10,7 @@ from library.observers.Observer import Observer
 from library.ultrasonic.ultrasonicsensors import ultra_sonic_sensors
 from library.messages.DistanceMessage import DistanceMessage
 from controls.RoboControl import RoboControl
+from library.queue.RoboQueue import RoboQueue
 from ws.WebSocketServer import WebSocketServer
 import queue
 
@@ -21,9 +22,10 @@ logger.setLevel(logging.INFO)
 ARRAY_MAX_LENGHT = 6
 h_dist = collections.deque(maxlen=ARRAY_MAX_LENGHT)
 
+WS_QUEUE = "ws-sendMessage"
 # Broadcast robot sensors info
 # RobotSensorInfo
-async def ws_ultrasonicsensor(robotControl:RoboControl, webSocket:WebSocketServer):
+async def ws_ultrasonicsensor(robotControl:RoboControl, queues:RoboQueue):
     logger.warning("warm up ultrasonic sensor")
     while len(h_dist)<=ARRAY_MAX_LENGHT-1:
         h_dist.append(int(ultra_sonic_sensors[0].get_distance() *100))
@@ -34,13 +36,16 @@ async def ws_ultrasonicsensor(robotControl:RoboControl, webSocket:WebSocketServe
     wsObserver = Observer(Message("Alert","ws_ultrasonic", ""))
     robotControl.register_observer(ultrasonicSensorObserver, robotControl.on_distance_sensor)
     #webSocketServer.register_observer(wsObserver, webSocketServer.on_send)
+    ws_queue: queue.Queue = queues.get(WS_QUEUE)
 
     while True:
         try:
              distance = ultra_sonic_sensors[0].get_distance()
              direction = calculate_obstacle_direction(distance)
+
              ultrasonicSensorObserver.emit =  DistanceMessage(True, distance,direction)
-             webSocket.enqueue_message(Message("Alert", "ws_ultrasonic", {"enabled": True, "direction":direction, "distance": distance}))
+
+             ws_queue.put(Message("Alert", "ws_ultrasonic", {"enabled": True, "direction":direction, "distance": distance}))
              #webSocketQueue.put(Message("Alert", "ws_ultrasonic", {"enabled": True, "direction":direction, "distance": distance}))
     #         if distance<=0.2:
     #             #Prepare Message
