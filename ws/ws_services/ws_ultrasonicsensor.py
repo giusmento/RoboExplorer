@@ -1,17 +1,14 @@
 import asyncio
-import json
 import logging
 import collections
 import numpy as np
 from ws.messages.Message import Message
-from ws.WebSocketServer import WS_USERS
-from ws.utils.ws_utils import send_message_to_all
+from ws.config import WEBSOCKET_QUEUE
 from library.observers.Observer import Observer
 from library.ultrasonic.ultrasonicsensors import ultra_sonic_sensors
 from library.messages.DistanceMessage import DistanceMessage
 from controls.RoboControl import RoboControl
 from library.queue.RoboQueue import RoboQueue
-from ws.WebSocketServer import WebSocketServer
 import queue
 
 FORMAT = '%(asctime)s  %(name)s  %(levelname)s: %(message)s'
@@ -23,21 +20,22 @@ ARRAY_MAX_LENGHT = 6
 h_dist = collections.deque(maxlen=ARRAY_MAX_LENGHT)
 
 WS_QUEUE = "ws-sendMessage"
-# Broadcast robot sensors info
-# RobotSensorInfo
+
+# This Thread controls the ultrasonic sensor
 async def ws_ultrasonicsensor(robotControl:RoboControl, queues:RoboQueue):
     logger.warning("warm up ultrasonic sensor")
     while len(h_dist)<=ARRAY_MAX_LENGHT-1:
         h_dist.append(int(ultra_sonic_sensors[0].get_distance() *100))
         await asyncio.sleep(0.1)
     logger.warning("warm up completed")
-    # register the sensor with the controller
-    ultrasonicSensorObserver = Observer(DistanceMessage(False,0,0))
-    wsObserver = Observer(Message("Alert","ws_ultrasonic", ""))
-    robotControl.register_observer(ultrasonicSensorObserver, robotControl.on_distance_sensor)
-    #webSocketServer.register_observer(wsObserver, webSocketServer.on_send)
-    ws_queue: queue.Queue = queues.get(WS_QUEUE)
 
+    # register sensor observer in robot control
+    ultrasonicSensorObserver = Observer(DistanceMessage(False,0,0))
+    robotControl.register_observer(ultrasonicSensorObserver, robotControl.on_distance_sensor)
+
+    # get queue to send ws message
+    ws_queue: queue.Queue = queues.get(WEBSOCKET_QUEUE)
+    # Loop and update network with distance and object direction
     while True:
         try:
              distance = ultra_sonic_sensors[0].get_distance()
