@@ -17,6 +17,7 @@ from threads.th_ultrasonicsensor import th_ultrasonicsensor
 from threads.th_broadcast_robo_status import th_broadcast_robo_status
 from threads.th_broadcast_queue import th_broadcast_queue
 from library.queue.RoboQueue import RoboQueue
+from library.robot.RoboExplorer import RoboExplorer
 from controls.RoboControl_EasyMove import RoboControl_EasyMove
 
 #Inizialize thread communication
@@ -25,12 +26,14 @@ roboQueue.create(WEBSOCKET_QUEUE)
 # inizialize websocket
 webSocketServer = WebSocketServer()
 
-# Start robot control
-roboControl = RoboControl_EasyMove()
+# create robot instance
+roboExplorer = RoboExplorer()
+# Start robot controller
+roboControl = RoboControl_EasyMove(roboExplorer)
 
 try:
     # START THREADS
-    asyncio.get_event_loop().create_task(th_broadcast_robo_status(roboControl))
+    asyncio.get_event_loop().create_task(th_broadcast_robo_status(roboControl, roboQueue))
     asyncio.get_event_loop().create_task(th_ultrasonicsensor(roboControl, roboQueue))
     # START WEB SOCKET SERVER
     asyncio.get_event_loop().run_until_complete(webSocketServer.start(HOST_ADDRESS, HOST_PORT))

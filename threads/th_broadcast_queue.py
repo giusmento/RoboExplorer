@@ -24,8 +24,12 @@ async def th_broadcast_queue(webSocketServer:WebSocketServer, roboQueue: RoboQue
 
 async def send_all_enqueued_messages(q:queue.Queue, webSocketServer:WebSocketServer):
     while not q.empty():
-        item = q.get()
-        jmessage = json.dumps(item.__dict__)
-        await webSocketServer.broadcast(jmessage)
-        print(f'Working on {item}')
-        q.task_done()
+        try:
+            item = q.get()
+            jmessage = json.dumps(item.__dict__)
+            #jmessage = json.dumps(item)
+            await webSocketServer.broadcast(jmessage)
+            print(f'Working on {item}')
+            q.task_done()
+        except:
+            logger.error("cant send item %s", item)

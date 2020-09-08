@@ -19,8 +19,6 @@ logger.setLevel(logging.INFO)
 ARRAY_MAX_LENGHT = 6
 h_dist = collections.deque(maxlen=ARRAY_MAX_LENGHT)
 
-WS_QUEUE = "ws-sendMessage"
-
 # This Thread controls the ultrasonic sensor
 async def th_ultrasonicsensor(robotControl:RoboControl, queues:RoboQueue):
     logger.warning("warm up ultrasonic sensor")
@@ -30,7 +28,7 @@ async def th_ultrasonicsensor(robotControl:RoboControl, queues:RoboQueue):
     logger.warning("warm up completed")
 
     # register sensor observer in robot control
-    ultrasonicSensorObserver = Observer(DistanceMessage(False,0,0))
+    ultrasonicSensorObserver = Observer()
     robotControl.register_observer(ultrasonicSensorObserver, robotControl.on_distance_sensor)
 
     # get queue to send ws message

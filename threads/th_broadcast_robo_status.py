@@ -1,22 +1,28 @@
 import asyncio
 import logging
+import queue
+from config import WEBSOCKET_QUEUE
 from controls.RoboControl import RoboControl
 from config import LOG_FORMAT
+from library.observers.Observer import Observer
+from library.queue.RoboQueue import RoboQueue
+from library.messages.Message import Message
 
 logging.basicConfig(format=LOG_FORMAT)
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.INFO)
 
 # Broadcast robot status
-async def th_broadcast_robo_status(roboControl:RoboControl):
+async def th_broadcast_robo_status(roboControl:RoboControl, roboQueue:RoboQueue):
+
+    summary_observer = Observer()
+    roboControl.register_receiver(summary_observer, roboControl.on_status)
+    ws_queue: queue.Queue = roboQueue.get(WEBSOCKET_QUEUE)
+
     while True:
         print("ws_broadcast_report")
-        # payload = roboExplorer.status()
-        # message = Message("Summary", "RobotExplorer", payload)
-        # jj = json.dumps(message.__dict__)
-        # await send_message_to_all(jj, WS_USERS)
-        # # await asyncio.gather(
-        # #     *[ws.send(jj) for ws in WS_USERS],
-        # #     return_exceptions=False,
-        # # )
+        test = summary_observer.receive()
+        ws_queue.put(Message("Summary", "robot_status", test))
+        print(test)
+        ws_queue.put(test)
         await asyncio.sleep(5)
