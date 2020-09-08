@@ -26,6 +26,7 @@ async def send_all_enqueued_messages(q:queue.Queue, webSocketServer:WebSocketSer
     while not q.empty():
         try:
             item = q.get()
+            # TODO: check if item is a Message or throw error
             jmessage = json.dumps(item.__dict__)
             #jmessage = json.dumps(item)
             await webSocketServer.broadcast(jmessage)
