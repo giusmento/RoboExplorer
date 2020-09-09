@@ -1,7 +1,7 @@
 import { makeStyles } from "@material-ui/styles";
 import { fade } from "@material-ui/core/styles/colorManipulator";
 
-export default makeStyles(theme => ({
+export default makeStyles((theme) => ({
   logotype: {
     color: "white",
     marginLeft: theme.spacing(2.5),
@@ -15,7 +15,7 @@ export default makeStyles(theme => ({
   },
   appBar: {
     width: "100vw",
-    zIndex: theme.zIndex.drawer + 1,
+    zIndex: theme.zIndex.drawer + 1 + "!important",
     transition: theme.transitions.create(["margin"], {
       easing: theme.transitions.easing.sharp,
       duration: theme.transitions.duration.leavingScreen,
@@ -67,14 +67,14 @@ export default makeStyles(theme => ({
     right: theme.spacing(1.25),
   },
   inputRoot: {
-    color: "inherit",
+    color: "inherit !important",
     width: "100%",
   },
   inputInput: {
-    height: 36,
-    padding: 0,
-    paddingRight: 36 + theme.spacing(1.25),
-    width: "100%",
+    height: 36 + "px !important",
+    padding: 0 + "px !important",
+    paddingRight: 36 + theme.spacing(1.25) + "px !important",
+    width: "100% !important",
   },
   messageContent: {
     display: "flex",
@@ -113,7 +113,7 @@ export default makeStyles(theme => ({
   profileMenuUser: {
     display: "flex",
     flexDirection: "column",
-    padding: theme.spacing(2),
+    padding: "1px 10px",
   },
   profileMenuItem: {
     color: theme.palette.text.hint,
@@ -146,14 +146,5 @@ export default makeStyles(theme => ({
   messageNotificationBodySide: {
     alignItems: "flex-start",
     marginRight: 0,
-  },
-  sendMessageButton: {
-    margin: theme.spacing(4),
-    marginTop: theme.spacing(2),
-    marginBottom: theme.spacing(2),
-    textTransform: "none",
-  },
-  sendButtonIcon: {
-    marginLeft: theme.spacing(2),
   },
 }));

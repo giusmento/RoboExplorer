@@ -27,9 +27,14 @@ export default function Widget({
   var [moreButtonRef, setMoreButtonRef] = useState(null);
   var [isMoreMenuOpen, setMoreMenuOpen] = useState(false);
 
+  console.log(props);
   return (
     <div className={classes.widgetWrapper}>
-      <Paper className={classes.paper} classes={{ root: classes.widgetRoot }}>
+      <Paper
+        className={
+          classes.paper + " " + (props.classes && props.classes.widgetWrapper)
+        }
+      >
         <div className={classes.widgetHeader}>
           {header ? (
             header

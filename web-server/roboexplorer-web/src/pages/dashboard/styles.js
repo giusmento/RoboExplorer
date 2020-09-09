@@ -1,10 +1,14 @@
 import { makeStyles } from "@material-ui/styles";
 
-export default makeStyles(theme => ({
+export default makeStyles((theme) => ({
   card: {
     minHeight: "100%",
     display: "flex",
     flexDirection: "column",
+  },
+  errorCard: {
+    border: "1px solid red",
+    backgroundColor: "rgba(255, 0, 0, 0.1)",
   },
   visitsNumberContainer: {
     display: "flex",

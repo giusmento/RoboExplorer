@@ -61,13 +61,14 @@ function Dashboard(props) {
     DistanceSensorData.arr
   );
   const [lastMessage, setLastMessage] = useState("");
-  const [distanceAlert, setDistanceAlert] = useState({ visible: false });
+  const [distanceAlert, setDistanceAlert] = useState({
+    visible: false,
+    message: "obstacle in line",
+  });
   const [motors, setMotors] = useState([]);
   const [servos, setServos] = useState([]);
   const [settings, setSettings] = useState([]);
   const [mainChart, setMainChart] = useState(mainChartData.arr);
-
-  console.log(mainChart);
 
   ws.onmessage = (message) => {
     //parse message
@@ -93,10 +94,11 @@ function Dashboard(props) {
         setMainChart(mainChartData.arr);
         setLastDistance({ value: last_distance, timestamp: timestamp });
         if (last_distance > 20) {
-          setDistanceAlert({ visble: false });
+          setDistanceAlert({ visble: true });
         }
         break;
       case "Alert":
+        console.log(msg.payload);
         setDistanceAlert({
           visible: true,
           message: msg.payload.message,
@@ -130,6 +132,9 @@ function Dashboard(props) {
             upperTitle
             bodyClass={classes.fullHeightBody}
             className={classes.card}
+            classes={
+              distanceAlert.visible && { widgetWrapper: classes.errorCard }
+            }
           >
             <div className={classes.visitsNumberContainer}>
               <Typography
@@ -154,9 +159,17 @@ function Dashboard(props) {
                 position: "relative",
                 top: "-17px",
                 minHeight: "30px",
+                marginTop: "20px",
               }}
             >
-              {distanceAlert.visible && <WarningRoundedIcon color="error" />}
+              {distanceAlert.visible && (
+                <div className={classes.visitsNumberContainer}>
+                  <WarningRoundedIcon color="error" />
+                  <Typography size="l" weight="medium" color="error">
+                    &nbsp;&nbsp;{distanceAlert.message}
+                  </Typography>
+                </div>
+              )}
             </div>
           </Widget>
         </Grid>
@@ -175,7 +188,7 @@ function Dashboard(props) {
             >
               <Grid item>
                 <div
-                  style={{ position: "relative", top: "30px", width: "224px" }}
+                  style={{ position: "relative", top: "10px", width: "224px" }}
                 >
                   <Typography
                     size="l"
@@ -191,7 +204,7 @@ function Dashboard(props) {
                   />
                 </div>
                 <div
-                  style={{ position: "relative", top: "30px", width: "224px" }}
+                  style={{ position: "relative", top: "20px", width: "224px" }}
                 >
                   <Typography
                     size="l"

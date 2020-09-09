@@ -5,6 +5,7 @@ class RoboExplorer:
     def __init__(self):
         self.name= "Robot Explorer"
         self.max_speed = 100
+        self._delta_increase = 3
         self.__motors = [RobotMotors[0], RobotMotors[1]]
         self.__ultrasonicsensor = ultra_sonic_sensors[0]
         self.collition_detection = True
@@ -28,6 +29,18 @@ class RoboExplorer:
         self.__motors[0].stop()
         self.__motors[1].stop()
         self.is_moving = False
+
+    def increase_speed(self):
+        new_speed = self.last_speed + self._delta_increase
+        if new_speed > self.max_speed:
+            new_speed = self.max_speed
+        self.move_forward(new_speed)
+
+    def decrease_speed(self):
+        new_speed = self.last_speed - self._delta_increase
+        if new_speed < 0:
+            new_speed = 0
+        self.move_forward(new_speed)
 
     def get_distance(self):
         distance = self.__ultrasonicsensor.get_distance()

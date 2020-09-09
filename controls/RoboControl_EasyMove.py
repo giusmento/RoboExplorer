@@ -11,6 +11,12 @@ class RoboControl_EasyMove(RoboControl):
 
     def on_distance_sensor(self, data):
         print("new data from distance sensor:" + str(data))
+        # when direction smaller than zero - decrease speed
+        if data.direction > 0:
+            self.roboExplorer.increase_speed()
+        else:
+            self.roboExplorer.decrease_speed()
+        # when direction bigger than zero - increase speed
 
     def on_status(self):
         status = self.roboExplorer.status()

@@ -36,22 +36,18 @@ async def th_ultrasonicsensor(robotControl:RoboControl, queues:RoboQueue):
     # Loop and update network with distance and object direction
     while True:
         try:
-             distance = ultra_sonic_sensors[0].get_distance()
-             direction = calculate_obstacle_direction(distance)
+            distance = ultra_sonic_sensors[0].get_distance()
+            direction = calculate_obstacle_direction(distance)
 
-             ultrasonicSensorObserver.emit =  DistanceMessage(True, distance,direction)
+            ultrasonicSensorObserver.emit =  DistanceMessage(True, distance,direction)
 
-             ws_queue.put(Message("Alert", "ws_ultrasonic", {"enabled": True, "direction":direction, "distance": distance}))
+            ws_queue.put(Message("Alive", "ws_ultrasonic", {"enabled": True, "direction":direction, "distance": distance}))
              #webSocketQueue.put(Message("Alert", "ws_ultrasonic", {"enabled": True, "direction":direction, "distance": distance}))
-    #         if distance<=0.2:
-    #             #Prepare Message
-    #             message = Message("Alert", "UltrasonicSensor-0", {"message":"obstacle in line", "distance": distance})
-    #             jmessage = json.dumps(message.__dict__)
-    #             await send_message_to_all(jmessage, WS_USERS)
-    #             logger.warning("obstacle at %s cm direction %s" % (distance * 100, str(dev_dist)))
-    #         else:
-    #             logger.warning("distance %s cm, direction %s" % (distance * 100, str(dev_dist)))
-             logger.warning("distance %s cm, direction %s" % (distance * 100, str(direction)))
+            if distance<=0.3:
+                #Prepare Message
+                ws_queue.put(
+                    Message("Alert", "ws_ultrasonic", {"message":"obstacle in line", "distance": distance}))
+            logger.warning("distance %s cm, direction %s" % (distance * 100, str(direction)))
         except ValueError:
              logger.error ("Error:" + ValueError)
              ultrasonicSensorObserver.emit = DistanceMessage(False, 0, 0)

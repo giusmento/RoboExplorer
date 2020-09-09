@@ -37,9 +37,9 @@ const useStyles = makeStyles({
     width: "100%",
   },
   root: {
-    height: "40px",
-    padding: "20px 10px",
-    margin: "10px 0px",
+    height: "25px",
+    padding: "10px 10px",
+    margin: "0px 0px",
   },
 });
 
