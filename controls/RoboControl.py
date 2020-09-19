@@ -13,5 +13,9 @@ class RoboControl(RegistrableClass, ABC):
         pass
 
     @abstractmethod
+    def get_camera_status(self):
+        pass
+
+    @abstractmethod
     def on_status(self):
         pass

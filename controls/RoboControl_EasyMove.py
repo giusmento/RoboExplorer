@@ -18,6 +18,9 @@ class RoboControl_EasyMove(RoboControl):
             self.roboExplorer.decrease_speed()
         # when direction bigger than zero - increase speed
 
+    def get_camera_status(self):
+        return self.roboExplorer.camera
+
     def on_status(self):
         status = self.roboExplorer.status()
         return status

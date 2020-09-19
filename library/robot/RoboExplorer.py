@@ -13,6 +13,7 @@ class RoboExplorer:
         self.is_moving = False
         self.distance_sensor_direction = 0
         self.distance_sensor_enabled = False
+        self.camera = False
 
     def move_forward(self, speed):
         if speed is None:
