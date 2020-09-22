@@ -1,5 +1,5 @@
 from gpiozero import DistanceSensor
-from ws.parse_args import MOCK_GPIO, PIGPIO_ADDR
+from utils.parse_args import MOCK_GPIO, PIGPIO_ADDR
 import random
 
 class RoboUltraSonic:
@@ -31,11 +31,11 @@ class RoboUltraSonic:
             print("Error get distance")
 
     def __simulate_distance(self):
-        rand = random.randrange(-6, 6, 1)
+        rand = random.randrange(-6, 8, 1)
         if(rand==0):
          return self.last_distance
         if(abs(rand)> 4):
-            pre = self.last_distance + (rand / 10)
+            pre = self.last_distance + (rand / 20)
             if pre < 0:
                 pre = 0
             if pre> self.max_distance:
