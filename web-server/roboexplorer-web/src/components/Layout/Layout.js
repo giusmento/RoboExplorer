@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState }  from "react";
 import { Route, Switch, Redirect, withRouter } from "react-router-dom";
 import classnames from "classnames";
 
@@ -29,13 +29,28 @@ import WebSocketClient from "../../components/Websocket/WebSocketClient";
 function Layout(props) {
   var classes = useStyles();
 
+  //CAMERA HOOK
+  var [isCameraActive, setCameraActive] = useState(false);
+  var [isControlRobotActive, setControlRobotActive] = useState(false)
+
+  var toggleCameraActive = (status) => {
+    setCameraActive(status)
+  }
+
+  var toggleControlRobotActive = (status) =>{
+    setControlRobotActive(status)
+  }
+
   // global
   var layoutState = useLayoutState();
-  console.log("Layout");
+
   return (
     <div className={classes.root}>
       <>
-        <Header history={props.history} />
+        <Header history={props.history} 
+          toggleCameraActive={(status) => toggleCameraActive(status)}
+          toggleControlRobotActive={(status) => toggleControlRobotActive(status)}
+          />
         <Sidebar />
         <div
           className={classnames(classes.content, {
@@ -47,7 +62,15 @@ function Layout(props) {
             <WebSocketBroadcastProvider> */}
           <WebSocketClient>
             <Switch>
-              <Route path="/app/dashboard" component={Dashboard} />
+              <Route path="/app/dashboard" 
+              render={(routeProps) => (
+                <Dashboard {...routeProps} 
+                  {...props} 
+                  {...isCameraActive={isCameraActive}}
+                  {...isControlRobotActive={isControlRobotActive}}
+                />
+              )}
+                />
               <Route path="/app/typography" component={Typography} />
               <Route path="/app/tables" component={Tables} />
               <Route path="/app/notifications" component={Notifications} />

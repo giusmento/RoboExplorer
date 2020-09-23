@@ -31,14 +31,22 @@ class RoboExplorer:
         self.__motors[1].stop()
         self.is_moving = False
 
-    def increase_speed(self):
-        new_speed = self.last_speed + self._delta_increase
+    def increase_speed(self, delta):
+        if delta==0:
+            new_speed = self.last_speed + self._delta_increase
+        else:
+            new_speed = self.last_speed + delta
+
         if new_speed > self.max_speed:
             new_speed = self.max_speed
         self.move_forward(new_speed)
 
-    def decrease_speed(self):
-        new_speed = self.last_speed - self._delta_increase
+    def decrease_speed(self, delta):
+        if delta == 0:
+            new_speed = self.last_speed - self._delta_increase
+        else:
+            new_speed = self.last_speed - delta
+
         if new_speed < 0:
             new_speed = 0
         self.move_forward(new_speed)

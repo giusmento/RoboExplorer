@@ -38,7 +38,7 @@ try:
     asyncio.get_event_loop().create_task(th_broadcast_robo_status(roboControl, roboQueue))
     asyncio.get_event_loop().create_task(th_ultrasonicsensor(roboControl, roboQueue))
     # START WEB SOCKET SERVER
-    asyncio.get_event_loop().run_until_complete(webSocketServer.start(HOST_ADDRESS, HOST_PORT))
+    asyncio.get_event_loop().run_until_complete(webSocketServer.start(roboControl, HOST_ADDRESS, HOST_PORT))
     # START WEBSOCKET SEND SERVICE
     asyncio.get_event_loop().create_task(th_broadcast_queue(webSocketServer, roboQueue))
 

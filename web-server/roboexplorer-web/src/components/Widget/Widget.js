@@ -27,7 +27,6 @@ export default function Widget({
   var [moreButtonRef, setMoreButtonRef] = useState(null);
   var [isMoreMenuOpen, setMoreMenuOpen] = useState(false);
 
-  console.log(props);
   return (
     <div className={classes.widgetWrapper}>
       <Paper

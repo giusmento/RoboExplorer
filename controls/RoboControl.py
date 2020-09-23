@@ -13,6 +13,18 @@ class RoboControl(RegistrableClass, ABC):
         pass
 
     @abstractmethod
+    def on_motor_increase(self, data):
+        pass
+
+    @abstractmethod
+    def on_motor_decrease(self, data):
+        pass
+
+    @abstractmethod
+    def on_motor_stop(self):
+        pass
+
+    @abstractmethod
     def get_camera_status(self):
         pass
 

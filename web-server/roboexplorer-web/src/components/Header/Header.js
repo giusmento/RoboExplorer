@@ -4,10 +4,7 @@ import {
   Toolbar,
   IconButton,
   InputBase,
-  Menu,
-  MenuItem,
-  Fab,
-  Link,
+  Menu
 } from "@material-ui/core";
 import {
   Menu as MenuIcon,
@@ -17,6 +14,8 @@ import {
   Search as SearchIcon,
   Send as SendIcon,
   ArrowBack as ArrowBackIcon,
+  Camera as CameraIcon,
+  SportsEsports as SportsEsportsIcon
 } from "@material-ui/icons";
 import classNames from "classnames";
 
@@ -104,6 +103,8 @@ export default function Header(props) {
   var [isNotificationsUnread, setIsNotificationsUnread] = useState(true);
   var [profileMenu, setProfileMenu] = useState(null);
   var [isSearchOpen, setSearchOpen] = useState(false);
+  var [isCameraOpen, setCameraOpen] = useState(false);
+  var [isControlRobotOpen,setControlRobotOpen] = useState(false)
 
   return (
     <AppBar position="fixed" className={classes.appBar}>
@@ -137,7 +138,7 @@ export default function Header(props) {
           )}
         </IconButton>
         <Typography variant="h6" weight="medium" className={classes.logotype}>
-          React Material Admin
+          RoboExplorer
         </Typography>
         <div className={classes.grow} />
         <div
@@ -161,6 +162,30 @@ export default function Header(props) {
             }}
           />
         </div>
+        <IconButton
+          aria-haspopup="true"
+          color= {isCameraOpen ? "darkblue":"inherit"}
+          className={classes.headerMenuButton}
+          aria-controls="show-camera"
+          onClick={(e) => {
+            setCameraOpen(!isCameraOpen)
+            props.toggleCameraActive && props.toggleCameraActive(!isCameraOpen)}
+        }
+        >
+          <CameraIcon classes={{ root: classes.headerIcon }} />
+        </IconButton>
+        <IconButton
+          aria-haspopup="true"
+          color= {isControlRobotOpen ? "darkblue":"inherit"}
+          className={classes.headerMenuButton}
+          aria-controls="show-camera"
+          onClick={(e) => {
+            setControlRobotOpen(!isControlRobotOpen)
+            props.toggleControlRobotActive && props.toggleControlRobotActive(!isControlRobotOpen)}
+        }
+        >
+          <SportsEsportsIcon classes={{ root: classes.headerIcon }} />
+        </IconButton>
         <IconButton
           aria-haspopup="true"
           color="inherit"

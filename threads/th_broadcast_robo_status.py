@@ -22,7 +22,7 @@ async def th_broadcast_robo_status(roboControl:RoboControl, roboQueue:RoboQueue)
     while True:
         print("ws_broadcast_report")
         test = summary_observer.receive()
-        ws_queue.put(Message("Summary", "robot_status", test))
+        ws_queue.put(Message("Summary", "all", "robot_status", test))
         print(test)
         ws_queue.put(test)
         await asyncio.sleep(5)

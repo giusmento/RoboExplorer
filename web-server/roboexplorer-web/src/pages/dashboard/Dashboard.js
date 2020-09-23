@@ -1,11 +1,7 @@
 import React, { useState } from "react";
 import {
   Grid,
-  LinearProgress,
-  Select,
-  OutlinedInput,
-  MenuItem,
-  FormControlLabel,
+  IconButton,
   Checkbox,
 } from "@material-ui/core";
 import WarningRoundedIcon from "@material-ui/icons/WarningRounded";
@@ -19,18 +15,22 @@ import {
   LineChart,
   Line,
   Area,
-  PieChart,
-  Pie,
   Cell,
   YAxis,
   XAxis,
 } from "recharts";
+import {
+  KeyboardArrowUpRounded as KeyboardArrowUpRoundedIcon,
+  KeyboardArrowDownRounded as KeyboardArrowDownRoundedIcon,
+  KeyboardArrowLeftRounded as KeyboardArrowLeftRoundedIcon,
+  KeyboardArrowRightRounded as KeyboardArrowRightRoundedIcon,
+  PanTool as PanToolIcon
+} from "@material-ui/icons";
 
 // styles
 import useStyles from "./styles";
 
 // components
-import mock from "./mock";
 import Widget from "../../components/Widget";
 import PageTitle from "../../components/PageTitle";
 import { Typography } from "../../components/Wrappers";
@@ -40,8 +40,11 @@ import BigStat from "./components/BigStat/BigStat";
 
 import { WithWebSocket } from "../../components/Websocket/WithWebSocket";
 import { FixedLengthArray } from "../../utils/FixedLengthArray";
-import { ParseMessage } from "../../utils/ParseMessage";
-//import WebSocketContext from "../../components/Context/WebSocketContext";
+import { ParseMessage } from "../../utils/ParseMessage"
+import Draggable from "../../components/Draggable/Draggable.react"
+import CameraStream from "../../components/CameraStream/CameraStream.react"
+import {Rnd} from "react-rnd"
+import {WsMessage} from "../../utils/WsMessage"
 
 //const mainChartData = getMainChartData();
 const mainChartData = new FixedLengthArray(100);
@@ -110,6 +113,13 @@ function Dashboard(props) {
 
   // local
   var [mainChartState, setMainChartState] = useState("monthly");
+
+  function controlKeyboard(action, e){
+    console.log("action:", action)
+    const payload = JSON.stringify({ device: "motor", action: action, value: 10 })
+    const message = new WsMessage("setcommand","dashboard","server", payload)
+    props.ws.send(message.stringify())
+  }
 
   function SendWSMessage() {
     return (
@@ -425,6 +435,100 @@ function Dashboard(props) {
           </Widget>
         </Grid>
       </Grid>
+      <div>
+      {/* <Grid container spacing={4}>
+        <Grid item lg={3} md={4} sm={6} xs={12}> */}
+      <div className={props.isCameraActive ? '' : classes.hidden}>
+        <Rnd
+          default={{
+            x: 0,
+            y: 0,
+            width: 320,
+            height: 200,
+          }}
+        >
+          <Widget
+            title="Camera"
+            upperTitle
+            className={classes.card}
+            bodyClass={classes.fullHeightBody}
+          >
+            <div>
+              <CameraStream url="http://localhost:5001/video_feed"/>
+            </div>
+          </Widget>
+        </Rnd>
+        </div>
+        <div className={props.isControlRobotActive ? '' : classes.hidden}>
+        <Rnd
+          default={{
+            x: 0,
+            y: 0,
+            width: 320,
+            height: 200,
+          }}
+        >
+          <Widget
+            title="Robo Controls"
+            upperTitle
+            className={classes.card}
+            bodyClass={classes.fullHeightBody}
+          >
+            <div>
+              <Grid container spacing={4}>
+                <Grid item lg={8} md={10} sm={10} xs={12}>
+                  <div className={classes.controlKeyboardUp}>
+                  <IconButton
+                    aria-haspopup="true"
+                    color="inherit"
+                    onClick={(e) => controlKeyboard('increase',e.currentTarget)}
+                  >
+                    <KeyboardArrowUpRoundedIcon classes={{ root: classes.headerIcon }} />
+                  </IconButton>
+                  </div>
+                  <div className={classes.controlKeyboardLeft}>
+                  <IconButton
+                    aria-haspopup="true"
+                    color="inherit"
+                    onClick={(e) => controlKeyboard('left', e.currentTarget)}
+                  >
+                    <KeyboardArrowLeftRoundedIcon classes={{ root: classes.headerIcon }} />
+                  </IconButton>
+                  </div>
+                  <div className={classes.controlKeyboardDown}>
+                  <IconButton
+                    aria-haspopup="true"
+                    color="inherit"
+                    onClick={(e) => controlKeyboard('decrease', e.currentTarget)}
+                  >
+                    <KeyboardArrowDownRoundedIcon classes={{ root: classes.headerIcon }} />
+                  </IconButton>
+                  </div>
+                  <div className={classes.controlKeyboardRight}>
+                  <IconButton
+                    aria-haspopup="true"
+                    color="inherit"
+                    onClick={(e) => controlKeyboard('right', e.currentTarget)}
+                  >
+                    <KeyboardArrowRightRoundedIcon classes={{ root: classes.headerIcon }} />
+                  </IconButton>
+                  </div>
+                </Grid>
+                <Grid item >
+                  <IconButton
+                  aria-haspopup="true"
+                  color="red"
+                  onClick={(e) => controlKeyboard('stop', e.currentTarget)}
+                  >
+                    <PanToolIcon></PanToolIcon>
+                  </IconButton>
+                </Grid>
+              </Grid>
+            </div>
+          </Widget>
+        </Rnd>
+        </div>
+      </div>
     </>
   );
 }
