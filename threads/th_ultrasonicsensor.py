@@ -39,9 +39,9 @@ async def th_ultrasonicsensor(robotControl:RoboControl, queues:RoboQueue):
             distance = ultra_sonic_sensors[0].get_distance()
             direction = calculate_obstacle_direction(distance)
 
-            ultrasonicSensorObserver.emit =  DistanceMessage(True, distance,direction)
+            ultrasonicSensorObserver.emit =  DistanceMessage(True, distance, direction)
 
-            ws_queue.put(Message("Alive", "ws_ultrasonic", {"enabled": True, "direction":direction, "distance": distance}))
+            ws_queue.put(Message("Alive", "all", "ws_ultrasonic", {"enabled": True, "direction":direction, "distance": distance}))
              #webSocketQueue.put(Message("Alert", "ws_ultrasonic", {"enabled": True, "direction":direction, "distance": distance}))
             if distance<=0.3:
                 #Prepare Message

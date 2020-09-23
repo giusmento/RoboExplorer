@@ -1,6 +1,8 @@
 import { makeStyles } from "@material-ui/styles";
 
 export default makeStyles((theme) => ({
+
+  hidden: { display: "none" },
   card: {
     minHeight: "100%",
     display: "flex",
@@ -116,4 +118,27 @@ export default makeStyles((theme) => ({
     fontSize: "18px !important",
     marginLeft: theme.spacing(1),
   },
+  controlKeyboardUp:{
+    position: "relative",
+    top: "0px",
+    left: "50px",
+    width: "50px"
+  },
+  controlKeyboardDown:{
+    position: "relative",
+    width: "50px",
+    float: "left"
+  },
+    controlKeyboardLeft:{
+      position: "relative",
+      width: "50px",
+      left: "5px",
+      float: "left"
+  },
+  controlKeyboardRight:{
+    position: "relative",
+    width: "50px",
+    float: "left"
+    
+  }
 }));

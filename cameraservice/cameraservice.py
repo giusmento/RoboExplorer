@@ -14,7 +14,6 @@ def index():
     # return the rendered template
     return render_template("index.html")
 
-
 @camservice.route("/video_feed")
 def video_feed():
     # return the response generated along with the specific media
@@ -24,7 +23,6 @@ def video_feed():
 def __generate_stream():
     while True:
         #get camera frame
-        #frame = generate()
         jpg_frame = roboCam.capture_coded_frame('.jpg')
         yield (b'--frame\r\n'
                b'Content-Type: image/jpeg\r\n\r\n' + jpg_frame + b'\r\n\r\n')

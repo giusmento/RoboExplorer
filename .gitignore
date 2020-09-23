@@ -1,2 +1,4 @@
 .idea
 venv
+web-server/roboexplorer-web/build
+web-server/roboexplorer-web/node_modules

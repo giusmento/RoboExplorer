@@ -8,6 +8,8 @@ import logging
 import websockets
 import random
 from config import LOG_FORMAT
+from library.messages.Message import Message
+from library.messages.ParseMessage import ParseMessage
 
 logging.basicConfig(format=LOG_FORMAT)
 logger = logging.getLogger(__name__)
@@ -18,12 +20,14 @@ class WebSocketServer(object):
         self.WS_USERS = set()
         self.ws = None
         self.welcome_message = "Connected to RoboExplorer websocket"
+        self.roboControl = None
         super().__init__()
 
-    def start(self, HOST_ADDRESS, HOST_PORT):
+    def start(self, roboControl, HOST_ADDRESS, HOST_PORT):
         # START BROADCAST
         logger.info("start web socket at " + HOST_ADDRESS + ":" + str(HOST_PORT))
         self.ws = websockets.serve(self.__ws_main, HOST_ADDRESS, HOST_PORT)
+        self.roboControl = roboControl
         return self.ws
 
     async def send(self, message):
@@ -33,7 +37,7 @@ class WebSocketServer(object):
         if self.WS_USERS:  # asyncio.wait doesn't accept an empty list
             await asyncio.wait([user.send(message) for user in self.WS_USERS])
 
-    async def __ws_main(self, websocket, path   ):
+    async def __ws_main(self, websocket, path ):
         await self.__register_new_user(websocket)
         try:
             await websocket.send(json.dumps(self.welcome_message))
@@ -41,8 +45,11 @@ class WebSocketServer(object):
             async for message in websocket:
                 try:
                     data = json.loads(message)
-                    print(data)
+                    message = Message(data['type'], data['sender'], data['destination'], data['payload'])
+                    ParseMessage(message, self.roboControl)
+                    print(message)
                 except:
+                    print("Error parsing message")
                     pass
         except KeyboardInterrupt:
             pass
