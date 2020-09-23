@@ -26,6 +26,7 @@ import {
   KeyboardArrowRightRounded as KeyboardArrowRightRoundedIcon,
   PanTool as PanToolIcon
 } from "@material-ui/icons";
+
 // styles
 import useStyles from "./styles";
 
@@ -44,6 +45,7 @@ import Draggable from "../../components/Draggable/Draggable.react"
 import CameraStream from "../../components/CameraStream/CameraStream.react"
 import {Rnd} from "react-rnd"
 import {WsMessage} from "../../utils/WsMessage"
+
 //const mainChartData = getMainChartData();
 const mainChartData = new FixedLengthArray(100);
 
@@ -70,8 +72,6 @@ function Dashboard(props) {
   const [servos, setServos] = useState([]);
   const [settings, setSettings] = useState([]);
   const [mainChart, setMainChart] = useState(mainChartData.arr);
-
-  //console.log("Dashboard", props)
 
   ws.onmessage = (message) => {
     //parse message

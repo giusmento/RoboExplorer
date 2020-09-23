@@ -1,7 +1,6 @@
 import { makeStyles } from "@material-ui/styles";
 
 export default makeStyles((theme) => ({
-
   hidden: { display: "none" },
   card: {
     minHeight: "100%",
