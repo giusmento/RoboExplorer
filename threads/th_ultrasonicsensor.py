@@ -2,25 +2,21 @@ import asyncio
 import logging
 import collections
 import numpy as np
-from library.messages.Message import Message
-from config import WEBSOCKET_QUEUE
+from config import ULTRASONIC_FETCH_TIME, LOG_LEVEL, LOG_FORMAT
 from library.observers.Observer import Observer
 from library.ultrasonic.ultrasonicsensors import ultra_sonic_sensors
-from library.messages.DistanceMessage import DistanceMessage
+from library.events.DistanceEvent import DistanceEvent
 from controls.RoboControl import RoboControl
-from library.queue.RoboQueue import RoboQueue
-import queue
 
-FORMAT = '%(asctime)s  %(name)s  %(levelname)s: %(message)s'
-logging.basicConfig(format=FORMAT)
+logging.basicConfig(format=LOG_FORMAT)
 logger = logging.getLogger(__name__)
-logger.setLevel(logging.INFO)
+logger.setLevel(LOG_LEVEL)
 
 ARRAY_MAX_LENGHT = 6
 h_dist = collections.deque(maxlen=ARRAY_MAX_LENGHT)
 
 # This Thread controls the ultrasonic sensor
-async def th_ultrasonicsensor(robotControl:RoboControl, queues:RoboQueue):
+async def th_ultrasonicsensor(robotControl:RoboControl):
     logger.warning("warm up ultrasonic sensor")
     while len(h_dist)<=ARRAY_MAX_LENGHT-1:
         h_dist.append(int(ultra_sonic_sensors[0].get_distance() *100))
@@ -31,30 +27,21 @@ async def th_ultrasonicsensor(robotControl:RoboControl, queues:RoboQueue):
     ultrasonicSensorObserver = Observer()
     robotControl.register_observer(ultrasonicSensorObserver, robotControl.on_distance_sensor)
 
-    # get queue to send ws message
-    ws_queue: queue.Queue = queues.get(WEBSOCKET_QUEUE)
     # Loop and update network with distance and object direction
     while True:
         try:
             distance = ultra_sonic_sensors[0].get_distance()
             direction = calculate_obstacle_direction(distance)
 
-            ultrasonicSensorObserver.emit =  DistanceMessage(True, distance, direction)
+            ultrasonicSensorObserver.emit =  DistanceEvent(True, distance, direction)
 
-            ws_queue.put(Message("Alive", "all", "ws_ultrasonic", {"enabled": True, "direction":direction, "distance": distance}))
-             #webSocketQueue.put(Message("Alert", "ws_ultrasonic", {"enabled": True, "direction":direction, "distance": distance}))
-            if distance<=0.3:
-                #Prepare Message
-                ws_queue.put(
-                    Message("Alert", "ws_ultrasonic", {"message":"obstacle in line", "distance": distance}))
-            logger.warning("distance %s cm, direction %s" % (distance * 100, str(direction)))
         except ValueError:
              logger.error ("Error:" + ValueError)
-             ultrasonicSensorObserver.emit = DistanceMessage(False, 0, 0)
+             ultrasonicSensorObserver.emit = DistanceEvent(False, 0, 0)
         except TypeError:
              logger.error("Error:" + TypeError)
-             ultrasonicSensorObserver.emit = DistanceMessage(False, 0, 0)
-        await asyncio.sleep(2)
+             ultrasonicSensorObserver.emit = DistanceEvent(False, 0, 0)
+        await asyncio.sleep(ULTRASONIC_FETCH_TIME)
 
 def calculate_obstacle_direction(distance):
     h_dist.append(int(distance * 100))

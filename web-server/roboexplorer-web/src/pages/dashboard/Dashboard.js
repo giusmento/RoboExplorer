@@ -1,9 +1,5 @@
 import React, { useState } from "react";
-import {
-  Grid,
-  IconButton,
-  Checkbox,
-} from "@material-ui/core";
+import { Grid, IconButton, Checkbox } from "@material-ui/core";
 import WarningRoundedIcon from "@material-ui/icons/WarningRounded";
 import { Alert } from "@material-ui/lab";
 import { useTheme } from "@material-ui/styles";
@@ -24,7 +20,7 @@ import {
   KeyboardArrowDownRounded as KeyboardArrowDownRoundedIcon,
   KeyboardArrowLeftRounded as KeyboardArrowLeftRoundedIcon,
   KeyboardArrowRightRounded as KeyboardArrowRightRoundedIcon,
-  PanTool as PanToolIcon
+  PanTool as PanToolIcon,
 } from "@material-ui/icons";
 
 // styles
@@ -40,11 +36,11 @@ import BigStat from "./components/BigStat/BigStat";
 
 import { WithWebSocket } from "../../components/Websocket/WithWebSocket";
 import { FixedLengthArray } from "../../utils/FixedLengthArray";
-import { ParseMessage } from "../../utils/ParseMessage"
-import Draggable from "../../components/Draggable/Draggable.react"
-import CameraStream from "../../components/CameraStream/CameraStream.react"
-import {Rnd} from "react-rnd"
-import {WsMessage} from "../../utils/WsMessage"
+import { ParseMessage } from "../../utils/ParseMessage";
+import Draggable from "../../components/Draggable/Draggable.react";
+import CameraStream from "../../components/CameraStream/CameraStream.react";
+import { Rnd } from "react-rnd";
+import { WsMessage } from "../../utils/WsMessage";
 
 //const mainChartData = getMainChartData();
 const mainChartData = new FixedLengthArray(100);
@@ -77,36 +73,52 @@ function Dashboard(props) {
     //parse message
     //console.log("dash:", message.data);
     var msg = new ParseMessage(message.data);
-    //console.log("parsed:", msg);
-    setLastMessage(msg.timestamp);
-    switch (msg.type) {
-      case "Summary":
-        var last_distance = Math.round(msg.payload.last_distance * 100);
-        var timestamp = msg.timestamp;
-        DistanceSensorData.push({
-          value: last_distance,
-        });
-        mainChartData.push({
-          power_0: motors[0] && motors[0].speed ? motors[0].speed : 0,
-          distance_0: last_distance ? last_distance : 0,
-        });
-        setMotors(msg.payload.motors);
-        setServos(msg.payload.servos);
-        setSettings(msg.payload.settings);
-        setDistanceSensorChart(DistanceSensorData.arr);
-        setMainChart(mainChartData.arr);
-        setLastDistance({ value: last_distance, timestamp: timestamp });
-        if (last_distance > 20) {
-          setDistanceAlert({ visble: true });
-        }
-        break;
-      case "Alert":
-        console.log(msg.payload);
-        setDistanceAlert({
-          visible: true,
-          message: msg.payload.message,
-          distance: msg.payload.distance,
-        });
+    console.log("parsed:", msg);
+    //update timestamp
+    if (msg.timestamp) {
+      setLastMessage(msg.timestamp);
+    }
+    if (msg.type) {
+      switch (msg.type) {
+        case "UPDATE":
+          //last distance
+          if (msg.payload && msg.payload.last_distance) {
+            var last_distance = Math.round(msg.payload.last_distance * 100);
+            setLastDistance({ value: last_distance, timestamp: lastMessage });
+            if (last_distance > 20) {
+              setDistanceAlert({ visble: true });
+            }
+          }
+          // update values
+          if (msg.payload && msg.payload.motors) {
+            setMotors(msg.payload.motors);
+          }
+          if (msg.payload && msg.payload.servos) {
+            setServos(msg.payload.servos);
+          }
+          if (msg.payload && msg.payload.settings) {
+            setSettings(msg.payload.settings);
+          }
+          //update charts
+          DistanceSensorData.push({
+            value: lastDistance,
+          });
+          mainChartData.push({
+            power_0: motors[0] && motors[0].speed ? motors[0].speed : 0,
+            distance_0: lastDistance ? lastDistance : 0,
+          });
+          setDistanceSensorChart(DistanceSensorData.arr);
+          setMainChart(mainChartData.arr);
+
+          break;
+        case "Alert":
+          console.log(msg.payload);
+          setDistanceAlert({
+            visible: true,
+            message: msg.payload.message,
+            distance: msg.payload.distance,
+          });
+      }
     }
   };
   //console.log("ws", props);
@@ -114,11 +126,15 @@ function Dashboard(props) {
   // local
   var [mainChartState, setMainChartState] = useState("monthly");
 
-  function controlKeyboard(action, e){
-    console.log("action:", action)
-    const payload = JSON.stringify({ device: "motor", action: action, value: 10 })
-    const message = new WsMessage("setcommand","dashboard","server", payload)
-    props.ws.send(message.stringify())
+  function controlKeyboard(action, e) {
+    console.log("action:", action);
+    const payload = JSON.stringify({
+      device: "motor",
+      action: action,
+      value: 10,
+    });
+    const message = new WsMessage("setcommand", "dashboard", "server", payload);
+    props.ws.send(message.stringify());
   }
 
   function SendWSMessage() {
@@ -436,97 +452,113 @@ function Dashboard(props) {
         </Grid>
       </Grid>
       <div>
-      {/* <Grid container spacing={4}>
+        {/* <Grid container spacing={4}>
         <Grid item lg={3} md={4} sm={6} xs={12}> */}
-      <div className={props.isCameraActive ? '' : classes.hidden}>
-        <Rnd
-          default={{
-            x: 0,
-            y: 0,
-            width: 320,
-            height: 200,
-          }}
-        >
-          <Widget
-            title="Camera"
-            upperTitle
-            className={classes.card}
-            bodyClass={classes.fullHeightBody}
+        <div className={props.isCameraActive ? "" : classes.hidden}>
+          <Rnd
+            default={{
+              x: 0,
+              y: 0,
+              width: 320,
+              height: 200,
+            }}
           >
-            <div>
-              <CameraStream url="http://localhost:5001/video_feed"/>
-            </div>
-          </Widget>
-        </Rnd>
+            <Widget
+              title="Camera"
+              upperTitle
+              className={classes.card}
+              bodyClass={classes.fullHeightBody}
+            >
+              <div>
+                <CameraStream url="http://localhost:5001/video_feed" />
+              </div>
+            </Widget>
+          </Rnd>
         </div>
-        <div className={props.isControlRobotActive ? '' : classes.hidden}>
-        <Rnd
-          default={{
-            x: 0,
-            y: 0,
-            width: 320,
-            height: 200,
-          }}
-        >
-          <Widget
-            title="Robo Controls"
-            upperTitle
-            className={classes.card}
-            bodyClass={classes.fullHeightBody}
+        <div className={props.isControlRobotActive ? "" : classes.hidden}>
+          <Rnd
+            default={{
+              x: 0,
+              y: 0,
+              width: 320,
+              height: 200,
+            }}
           >
-            <div>
-              <Grid container spacing={4}>
-                <Grid item lg={8} md={10} sm={10} xs={12}>
-                  <div className={classes.controlKeyboardUp}>
-                  <IconButton
-                    aria-haspopup="true"
-                    color="inherit"
-                    onClick={(e) => controlKeyboard('increase',e.currentTarget)}
-                  >
-                    <KeyboardArrowUpRoundedIcon classes={{ root: classes.headerIcon }} />
-                  </IconButton>
-                  </div>
-                  <div className={classes.controlKeyboardLeft}>
-                  <IconButton
-                    aria-haspopup="true"
-                    color="inherit"
-                    onClick={(e) => controlKeyboard('left', e.currentTarget)}
-                  >
-                    <KeyboardArrowLeftRoundedIcon classes={{ root: classes.headerIcon }} />
-                  </IconButton>
-                  </div>
-                  <div className={classes.controlKeyboardDown}>
-                  <IconButton
-                    aria-haspopup="true"
-                    color="inherit"
-                    onClick={(e) => controlKeyboard('decrease', e.currentTarget)}
-                  >
-                    <KeyboardArrowDownRoundedIcon classes={{ root: classes.headerIcon }} />
-                  </IconButton>
-                  </div>
-                  <div className={classes.controlKeyboardRight}>
-                  <IconButton
-                    aria-haspopup="true"
-                    color="inherit"
-                    onClick={(e) => controlKeyboard('right', e.currentTarget)}
-                  >
-                    <KeyboardArrowRightRoundedIcon classes={{ root: classes.headerIcon }} />
-                  </IconButton>
-                  </div>
+            <Widget
+              title="Robo Controls"
+              upperTitle
+              className={classes.card}
+              bodyClass={classes.fullHeightBody}
+            >
+              <div>
+                <Grid container spacing={4}>
+                  <Grid item lg={8} md={10} sm={10} xs={12}>
+                    <div className={classes.controlKeyboardUp}>
+                      <IconButton
+                        aria-haspopup="true"
+                        color="inherit"
+                        onClick={(e) =>
+                          controlKeyboard("increase", e.currentTarget)
+                        }
+                      >
+                        <KeyboardArrowUpRoundedIcon
+                          classes={{ root: classes.headerIcon }}
+                        />
+                      </IconButton>
+                    </div>
+                    <div className={classes.controlKeyboardLeft}>
+                      <IconButton
+                        aria-haspopup="true"
+                        color="inherit"
+                        onClick={(e) =>
+                          controlKeyboard("left", e.currentTarget)
+                        }
+                      >
+                        <KeyboardArrowLeftRoundedIcon
+                          classes={{ root: classes.headerIcon }}
+                        />
+                      </IconButton>
+                    </div>
+                    <div className={classes.controlKeyboardDown}>
+                      <IconButton
+                        aria-haspopup="true"
+                        color="inherit"
+                        onClick={(e) =>
+                          controlKeyboard("decrease", e.currentTarget)
+                        }
+                      >
+                        <KeyboardArrowDownRoundedIcon
+                          classes={{ root: classes.headerIcon }}
+                        />
+                      </IconButton>
+                    </div>
+                    <div className={classes.controlKeyboardRight}>
+                      <IconButton
+                        aria-haspopup="true"
+                        color="inherit"
+                        onClick={(e) =>
+                          controlKeyboard("right", e.currentTarget)
+                        }
+                      >
+                        <KeyboardArrowRightRoundedIcon
+                          classes={{ root: classes.headerIcon }}
+                        />
+                      </IconButton>
+                    </div>
+                  </Grid>
+                  <Grid item>
+                    <IconButton
+                      aria-haspopup="true"
+                      color="red"
+                      onClick={(e) => controlKeyboard("stop", e.currentTarget)}
+                    >
+                      <PanToolIcon></PanToolIcon>
+                    </IconButton>
+                  </Grid>
                 </Grid>
-                <Grid item >
-                  <IconButton
-                  aria-haspopup="true"
-                  color="red"
-                  onClick={(e) => controlKeyboard('stop', e.currentTarget)}
-                  >
-                    <PanToolIcon></PanToolIcon>
-                  </IconButton>
-                </Grid>
-              </Grid>
-            </div>
-          </Widget>
-        </Rnd>
+              </div>
+            </Widget>
+          </Rnd>
         </div>
       </div>
     </>

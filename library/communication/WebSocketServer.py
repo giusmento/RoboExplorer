@@ -49,7 +49,7 @@ class WebSocketServer(object):
                     ParseMessage(message, self.roboControl)
                     print(message)
                 except:
-                    print("Error parsing message")
+                    logger.error("Error parsing message %s" % message)
                     pass
         except KeyboardInterrupt:
             pass
