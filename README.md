@@ -1,11 +1,11 @@
-# EVENT-DRIVEN FRAMEWORK
+# PYTHON EVENT-DRIVEN FRAMEWORK
 
-A simple event-driven architecture to control small appliances such as robot and IOT boards. 
+A simple python event-driven architecture to control small appliances such as robot and IOT boards. 
 
 It includes libraries for various sensors and a 
 communication protocols that enables connections with other devices. 
 
-A simple web-based application collects and monitor your IOT board
+A simple react web-based application collects and monitor your IOT board
 
 ## The Architecture - The main components
 
@@ -66,14 +66,14 @@ The RoboControl logic defines interactions with the low-layer.
 
 Integrate the framework in your development is really simple. You have mainly to implement two classes:
 
-1. RoboExplorer: this is strictly connected to your board/robot. here you have to wrap all your sensors and actuators.
-2. RoboControl: this is the funniest part. Define how your board/robot interacts with the external world by implementing your own RoboControl
+1. **RoboExplorer:** this is strictly connected to your board/robot. here you have to wrap all your sensors and actuators.
+2. **RoboControl:** this is the funniest part. Define how your board/robot interacts with the external world by implementing your own RoboControl
 
 Additionally you can start new threads that gather data from all your sensors
 
 This repository contains an example of a raspberry PI board with 2 motors, 2 servos and a distance sensor.
 
-## The web-based application
+## The react web-based application
 The built-in web application allow you to monitor and control your board. 
 The web application starts with the framework at the port 3000.
 
