@@ -2,3 +2,6 @@
 venv
 web-server/roboexplorer-web/build
 web-server/roboexplorer-web/node_modules
+ex.log*
+package-lock*
+__pycache__

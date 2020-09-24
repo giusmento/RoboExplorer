@@ -12,6 +12,7 @@ class RoboExplorer:
         self.last_speed= 0
         self.is_moving = False
         self.distance_sensor_direction = 0
+        self.distance_sensor_last_distance = 0
         self.distance_sensor_enabled = False
         self.camera = False
 
@@ -73,6 +74,14 @@ class RoboExplorer:
                 "anti_collision": self.collition_detection,
                 "camera": False
             }
+        }
+
+    def status_motors(self):
+        return {
+            "motors": [
+                {"name": "motor_0", "speed": self.last_speed},
+                {"name": "motor_1", "speed": 0}
+            ]
         }
 
     def is_ready(self):

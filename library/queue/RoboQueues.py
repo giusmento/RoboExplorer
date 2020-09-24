@@ -1,6 +1,6 @@
 import queue
 
-class RoboQueue(object):
+class RoboQueues(object):
 
     def __init__(self):
         self.__queues = {}
