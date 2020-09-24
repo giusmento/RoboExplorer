@@ -21,7 +21,7 @@ The three layers are:
 The external communication is implemented using a **WebSocket Server**. 
 The socket connection provides a simple channel where the board sends data and receives instructions.
 
-A build-in **Web-Application** simplifies connection and monitoring.
+A built-in **Web-Application** simplifies connection and monitoring.
 
 
 ### The class diagram
