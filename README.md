@@ -64,10 +64,12 @@ The RoboControl logic defines interactions with the low-layer.
 
 ## How I can start using the framework
 
-Integrate the framework in your development is really simple. You have mainly to implement two classes:
+Integrate the framework in your development is really simple. Follow the four steps and enjoy building your device!
 
-1. **RoboExplorer:** this is strictly connected to your board/robot. here you have to wrap all your sensors and actuators.
-2. **RoboControl:** this is the funniest part. Define how your board/robot interacts with the external world by implementing your own RoboControl
+1. **Wrap Component library**: this manages the component library
+2. **RoboExplorer:** this is strictly connected to your board/robot. here you have to wrap all your sensors and actuators.
+3. **RoboControl:** this is the funniest part. Define how your board/robot interacts with the external world by implementing your own RoboControl
+4. **Thread:** create a thread to produce events
 
 Additionally you can start new threads that gather data from all your sensors
 
@@ -79,5 +81,84 @@ The web application starts with the framework at the port 3000.
 
 ![WebApplication](images/WebApplication.png)
 
+## Example 1: how to connect a distance sensor
 
+This example shows how to connect and use a distance sensor.
 
+**PRE REQUISITE:** your have installed a sensor distance in the board/robot (Ex. HC-SR04)
+
+Follow the main 4 implementing steps:
+
+**1. Wrap component library:**
+
+HC-SR04 is wrapped in the class ``library/ultrasonic/RoboUltraSonic.py``
+(if your sensor is not compatible, extend/implement a new class with your own distance library). 
+Add and Initialise your distance sensor in the ``library/ultrasonicsensors.py`` array.
+
+**2. Define your RoboExplorer:**
+
+Creare your robot definition as the pre-defined RoboExplorer Object (``/library/robot/RoboExplorer.py``). 
+Following an example of how your can create a Robot with a single distance sensor.
+
+````
+from library.ultrasonic.ultrasonicsensors import ultra_sonic_sensors
+
+class RoboExplorer:
+    
+    def __init__(self):
+        self.__ultrasonicsensor = ultra_sonic_sensors[0]
+   
+    def get_distance(self):
+        distance = self.__ultrasonicsensor.get_distance()
+        return distance
+    
+    def close(self):
+        self.__ultrasonicsensor.close()
+````
+
+**3. Create the logic. the RoboControl object**
+
+Extend the RoboControl abstract class by creating your own logic. This class contains the code that runs for every single event.
+Following an example of a callback method that will be triggered by a new event.
+
+````
+from library.queue.RoboQueues import RoboQueues
+from library.events.DistanceEvent import DistanceEvent
+
+class RoboControl_EasyMove(RoboControl):
+
+    def __init__(self, roboExplorer:RoboExplorer, roboQueues:RoboQueues):
+        super().__init__();
+        self.roboExplorer = roboExplorer
+        self.roboQueues = roboQueues
+        pass
+        
+     def on_distance_sensor(self, data:DistanceEvent):
+        print(str(data))
+````
+
+**4. Generate distance events. Create your thread.**
+Thread are used to run part of codes concurrently. this example shows how we interact with the distance sensor library
+and trigger the callback distance method (on_distance_sensor) every time a new reading is ready.
+
+````
+async def th_ultrasonicsensor(robotControl:RoboControl):
+    # register sensor observer in robot control
+    ultrasonicSensorObserver = Observer()
+    robotControl.register_observer(ultrasonicSensorObserver, robotControl.on_distance_sensor)
+    while True:
+        try:
+            distance = ultra_sonic_sensors[0].get_distance()
+            ultrasonicSensorObserver.emit =  DistanceEvent(True, distance, direction)
+            await asyncio.sleep(3)
+````
+_Line 1:_ a new async function (th_ultrasonicsensor) with the argument ``robocontrol`` is defined.
+
+_Line 3-4:_ a new ``Observer`` is created and the method ``roboControl.on_distance_sensor`` is registered within the ``Observer``
+
+_Line 5-7:_ an infinite loop starts and call the get_distance method 
+
+_Line 8:_ the Observer emits a new message and trigger the registered callback (roboControl.on_distance_sensor) 
+that starts the execution
+
+_Line 9:_ the code waits 3 secs
