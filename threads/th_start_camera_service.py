@@ -16,7 +16,7 @@ async def th_start_camera_service(roboControl:RoboControl):
         if roboControl.roboExplorer.camera:
             if subproc is None:
                 logger.info('start subprocess camera service')
-                command = ['python', '../cameraservice/cameraservice.py']
+                command = ['python', 'cameraservice/cameraservice.py']
                 subproc = subprocess.Popen(command, stdin=subprocess.PIPE)
         else:
             if subproc is not None:

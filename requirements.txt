@@ -5,3 +5,4 @@ pigpio==1.46
 websockets==8.1
 websocket_client==0.57.0
 numpy==1.19.1
+opencv-python==4.4.0.44

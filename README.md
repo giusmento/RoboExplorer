@@ -162,3 +162,17 @@ _Line 8:_ the Observer emits a new message and trigger the registered callback (
 that starts the execution
 
 _Line 9:_ the code waits 3 secs
+
+## How to start the framework
+
+Create new virtual env
+
+````
+pip install virtualenv
+virtualenv env -p python3.7
+source env/bin/activate
+````
+Install libraries
+````
+pip install -r requirements.txt
+````
