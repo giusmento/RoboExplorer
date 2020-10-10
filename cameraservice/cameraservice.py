@@ -6,6 +6,7 @@ import time
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '../')))
 
 from library.camera.RoboCam import RoboCam
+from config import CAMERA_INDEX
 
 
 # GLOBAL CAM CONF
@@ -42,5 +43,5 @@ def __generate_stream():
 
 
 if __name__ == '__main__':
-    roboCam = RoboCam(1)
+    roboCam = RoboCam(CAMERA_INDEX)
     camservice.run(host=__CAM_HOST, port=__CAM_PORT)

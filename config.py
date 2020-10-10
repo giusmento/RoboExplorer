@@ -5,6 +5,8 @@ LOG_FORMAT = '%(asctime)s  %(name)s  %(levelname)s: %(message)s'
 # DEBUG=10, INFO=20, WARN=30, ERROR=40, FATAL=50, NOTSET=0
 LOG_LEVEL = 20
 
+CAMERA_INDEX = 1
+
 WEBSOCKET_QUEUE = "q-send-ws-message"
 
 BROADCAST_STATUS_TIME = 10
