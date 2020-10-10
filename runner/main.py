@@ -1,12 +1,18 @@
 import asyncio
 import logging
-from utils.gpio_conf import gpio_conf
-from utils.parse_args import *
-from config import *
+import sys
+import os
 
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '../')))
+
+from config import *
 logging.basicConfig(format= LOG_FORMAT)
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.INFO)
+
+
+from utils.gpio_conf import gpio_conf
+from utils.parse_args import *
 
 # configure GPIO
 gpio_conf(MOCK_GPIO, PIGPIO_ADDR)
