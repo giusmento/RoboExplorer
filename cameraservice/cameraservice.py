@@ -1,6 +1,7 @@
 from flask import Flask, render_template, Response
 import sys
 import os
+import time
 
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '../')))
 
@@ -26,11 +27,19 @@ def video_feed():
     return Response(__generate_stream(), mimetype = "multipart/x-mixed-replace; boundary=frame")
 
 def __generate_stream():
+    waiting = 0
     while True:
         #get camera frame
         jpg_frame = roboCam.capture_coded_frame('.jpg')
-        yield (b'--frame\r\n'
-               b'Content-Type: image/jpeg\r\n\r\n' + jpg_frame + b'\r\n\r\n')
+        if jpg_frame!=None:
+            yield (b'--frame\r\n'
+                   b'Content-Type: image/jpeg\r\n\r\n' + jpg_frame + b'\r\n\r\n')
+        else:
+            waiting = (waiting * 2) + 1
+            time.sleep(waiting)
+            if waiting > 30:
+                break
+
 
 if __name__ == '__main__':
     roboCam = RoboCam(1)

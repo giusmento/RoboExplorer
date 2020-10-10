@@ -6,9 +6,10 @@ import os
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '../')))
 
 from config import *
+
 logging.basicConfig(format= LOG_FORMAT)
 logger = logging.getLogger(__name__)
-logger.setLevel(logging.INFO)
+logger.setLevel(LOG_LEVEL)
 
 
 from utils.gpio_conf import gpio_conf

@@ -1,5 +1,10 @@
 import cv2
-import time
+import logging
+from config import LOG_FORMAT, LOG_LEVEL
+
+logging.basicConfig(format= LOG_FORMAT)
+logger = logging.getLogger(__name__)
+logger.setLevel(LOG_LEVEL)
 
 class RoboCam:
 
@@ -20,5 +25,9 @@ class RoboCam:
     # format: the frame format output ex. '.jpg'
     def capture_coded_frame(self, format):
         ret, frame = self.cv.read()
-        ret, coded = cv2.imencode(format, frame)
-        return coded.tobytes()
+        if frame is not None:
+            ret, coded = cv2.imencode(format, frame)
+            return coded.tobytes()
+        else:
+            logger.error("Frame is empty")
+            return None

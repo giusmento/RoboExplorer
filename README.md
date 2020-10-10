@@ -176,3 +176,14 @@ Install libraries
 ````
 pip install -r requirements.txt
 ````
+
+On raspberry
+````
+sudo apt-get install libatlas-base-dev
+pip install RPi.GPIO
+````
+
+Run
+````
+python runner/main.py 
+````
