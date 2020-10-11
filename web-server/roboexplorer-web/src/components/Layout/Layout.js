@@ -1,4 +1,4 @@
-import React, { useState }  from "react";
+import React, { useState } from "react";
 import { Route, Switch, Redirect, withRouter } from "react-router-dom";
 import classnames from "classnames";
 
@@ -21,9 +21,9 @@ import Charts from "../../pages/charts";
 // context
 import { useLayoutState } from "../../context/LayoutContext";
 
-import { WebSocketBroadcastProvider } from "../Websocket/WebSocketBroadcastContext.react";
-import { WebSocketConnectionProvider } from "../Websocket/WebSocketConnectionContext.react";
-import WebSocketClientFunc from "../../components/Websocket/WebSocketClientFunc";
+// import { WebSocketBroadcastProvider } from "../Websocket/WebSocketBroadcastContext.react";
+// import { WebSocketConnectionProvider } from "../Websocket/WebSocketConnectionContext.react";
+// import WebSocketClientFunc from "../../components/Websocket/WebSocketClientFunc";
 import WebSocketClient from "../../components/Websocket/WebSocketClient";
 
 function Layout(props) {
@@ -31,15 +31,15 @@ function Layout(props) {
 
   //CAMERA HOOK
   var [isCameraActive, setCameraActive] = useState(false);
-  var [isControlRobotActive, setControlRobotActive] = useState(false)
+  var [isControlRobotActive, setControlRobotActive] = useState(false);
 
   var toggleCameraActive = (status) => {
-    setCameraActive(status)
-  }
+    setCameraActive(status);
+  };
 
-  var toggleControlRobotActive = (status) =>{
-    setControlRobotActive(status)
-  }
+  var toggleControlRobotActive = (status) => {
+    setControlRobotActive(status);
+  };
 
   // global
   var layoutState = useLayoutState();
@@ -47,10 +47,13 @@ function Layout(props) {
   return (
     <div className={classes.root}>
       <>
-        <Header history={props.history} 
+        <Header
+          history={props.history}
           toggleCameraActive={(status) => toggleCameraActive(status)}
-          toggleControlRobotActive={(status) => toggleControlRobotActive(status)}
-          />
+          toggleControlRobotActive={(status) =>
+            toggleControlRobotActive(status)
+          }
+        />
         <Sidebar />
         <div
           className={classnames(classes.content, {
@@ -62,15 +65,17 @@ function Layout(props) {
             <WebSocketBroadcastProvider> */}
           <WebSocketClient>
             <Switch>
-              <Route path="/app/dashboard" 
-              render={(routeProps) => (
-                <Dashboard {...routeProps} 
-                  {...props} 
-                  {...isCameraActive={isCameraActive}}
-                  {...isControlRobotActive={isControlRobotActive}}
-                />
-              )}
-                />
+              <Route
+                path="/app/dashboard"
+                render={(routeProps) => (
+                  <Dashboard
+                    {...routeProps}
+                    {...props}
+                    {...(isCameraActive = { isCameraActive })}
+                    {...(isControlRobotActive = { isControlRobotActive })}
+                  />
+                )}
+              />
               <Route path="/app/typography" component={Typography} />
               <Route path="/app/tables" component={Tables} />
               <Route path="/app/notifications" component={Notifications} />

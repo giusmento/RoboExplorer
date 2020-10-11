@@ -5,7 +5,7 @@ class RoboExplorer:
     def __init__(self):
         self.name= "Robot Explorer"
         self.max_speed = 100
-        self._delta_increase = 3
+        self._delta_increase = 10
         self.__motors = [RobotMotors[0], RobotMotors[1]]
         self.__ultrasonicsensor = ultra_sonic_sensors[0]
         self.collition_detection = True

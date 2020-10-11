@@ -187,3 +187,13 @@ Run
 ````
 python runner/main.py 
 ````
+
+## How to start the front-end
+
+````
+apt-get update
+apt-get install npm
+cd web-server/roboexplorer-web/
+npm install
+npm start
+````

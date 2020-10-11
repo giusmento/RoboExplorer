@@ -17,13 +17,18 @@ class WebSocketClient extends React.Component {
     this.connect();
   }
 
+  webServerHost = "192.168.1.190";
+  webServerPort = "6790";
+
   timeout = 250; // Initial timeout duration as a class variable
   /**
    * @function connect
    * This function establishes the connect with the websocket and also ensures constant reconnection if connection closes
    */
   connect = () => {
-    var ws = new WebSocket("ws://localhost:6790/");
+    var ws = new WebSocket(
+      "ws://" + this.webServerHost + ":" + this.webServerPort + "/"
+    );
     // console.log(this);
     // this.props.setWs(ws);
     var connectInterval;

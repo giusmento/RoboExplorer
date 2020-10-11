@@ -52,6 +52,8 @@ function Dashboard(props) {
   var classes = useStyles();
   var theme = useTheme();
   var ws: WebSocket = props.ws;
+  var serverhost = "192.168.1.190";
+  var WebCamUrl = "http://" + serverhost + ":5001/video_feed";
   const [lastDistance, setLastDistance] = useState({
     value: 0,
     timestamp: "",
@@ -470,7 +472,7 @@ function Dashboard(props) {
               bodyClass={classes.fullHeightBody}
             >
               <div>
-                <CameraStream url="http://localhost:5001/video_feed" />
+                <CameraStream url={WebCamUrl} />
               </div>
             </Widget>
           </Rnd>

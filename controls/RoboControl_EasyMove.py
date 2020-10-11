@@ -27,7 +27,7 @@ class RoboControl_EasyMove(RoboControl):
             self.roboExplorer.stop_motors()
             logger.warning("Motors stopped on distance event - dist: %s" % (data.distance*100) )
         # decrease or increase speed
-        elif (data.distance>0.3 and data.direction>0):
+        elif (data.distance>0.3 and data.direction>=0):
             self.roboExplorer.increase_speed(0)
         else:
             self.roboExplorer.decrease_speed(0)

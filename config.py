@@ -1,4 +1,4 @@
-HOST_ADDRESS = "localhost"
+HOST_ADDRESS = "0.0.0.0"
 HOST_PORT = 6790
 
 LOG_FORMAT = '%(asctime)s  %(name)s  %(levelname)s: %(message)s'
@@ -10,4 +10,4 @@ CAMERA_INDEX = 1
 WEBSOCKET_QUEUE = "q-send-ws-message"
 
 BROADCAST_STATUS_TIME = 10
-ULTRASONIC_FETCH_TIME = 3
+ULTRASONIC_FETCH_TIME = 2
